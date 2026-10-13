@@ -1,7 +1,3 @@
-import contextlib
-import re
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +6,7 @@ from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
-from app.services import auth_service, status_page_service
+from app.services import auth_service
 from app.utils.jwt import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -33,26 +29,6 @@ async def register(
             password=body.password,
             name=body.name,
         )
-        # Create default status page for new user
-        default_slug = re.sub(r"[^a-z0-9]", "", body.name.lower())[:20] or "status"
-        try:
-            await status_page_service.create_status_page(
-                db,
-                user_id=user.id,
-                slug=default_slug,
-                title=f"{body.name}'s Status Page",
-                description=f"Public status page for {body.name}.",
-            )
-        except ValueError:
-            unique_slug = f"{default_slug}-{uuid.uuid4().hex[:4]}"
-            with contextlib.suppress(ValueError):
-                await status_page_service.create_status_page(
-                    db,
-                    user_id=user.id,
-                    slug=unique_slug,
-                    title=f"{body.name}'s Status Page",
-                    description=f"Public status page for {body.name}.",
-                )
         await db.commit()
     except ValueError as exc:
         raise HTTPException(

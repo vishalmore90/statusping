@@ -4,6 +4,7 @@ Scheduler integration stubs are called here; actual job management in Phase 4.
 """
 
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -75,6 +76,7 @@ async def create_monitor(
     )
     db.add(monitor)
     await db.flush()
+    await db.refresh(monitor)
 
     from app.scheduler.jobs import add_monitor_job
 
@@ -115,8 +117,10 @@ async def update_monitor(
     if status_page_id is not None:
         monitor.status_page_id = status_page_id
 
+    monitor.updated_at = datetime.now(UTC)
     db.add(monitor)
     await db.flush()
+    await db.refresh(monitor)
 
     from app.scheduler.jobs import reschedule_monitor_job
 

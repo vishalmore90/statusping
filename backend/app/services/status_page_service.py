@@ -4,6 +4,7 @@ MVP: 1 status page per user (enforced here).
 """
 
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -52,6 +53,7 @@ async def create_status_page(
     db.add(page)
     try:
         await db.flush()
+        await db.refresh(page)
     except IntegrityError:
         await db.rollback()
         raise ValueError(f"Slug '{slug}' is already taken.") from None
@@ -74,9 +76,11 @@ async def update_status_page(
         page.description = description
     if is_public is not None:
         page.is_public = is_public
+    page.updated_at = datetime.now(UTC)
     db.add(page)
     try:
         await db.flush()
+        await db.refresh(page)
     except IntegrityError:
         await db.rollback()
         raise ValueError(f"Slug '{slug}' is already taken.") from None
