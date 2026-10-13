@@ -11,7 +11,6 @@ Design:
 
 import asyncio
 import logging
-from collections.abc import Coroutine
 from typing import Any
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -31,9 +30,9 @@ _scheduler = BackgroundScheduler(timezone="UTC")
 # ── Internal helper ───────────────────────────────────────────────────────────
 
 
-def _run_async(coro: Coroutine[Any, Any, Any]) -> None:
-    """Run an async coroutine from a sync scheduler context."""
-    asyncio.run(coro)
+def _run_async(fn: Any, *args: Any) -> None:
+    """Run an async function from a sync scheduler context."""
+    asyncio.run(fn(*args))
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -41,7 +40,11 @@ def _run_async(coro: Coroutine[Any, Any, Any]) -> None:
 
 def add_monitor_job(monitor: Monitor) -> None:
     """Add (or replace) an interval job for a monitor."""
+    from app.config import settings
     from app.services.check_service import run_check
+
+    if settings.app_env == "test":
+        return
 
     job_id = str(monitor.id)
     if _scheduler.get_job(job_id):
@@ -52,7 +55,7 @@ def add_monitor_job(monitor: Monitor) -> None:
         trigger=IntervalTrigger(seconds=monitor.interval_seconds),
         id=job_id,
         name=f"check:{monitor.name}",
-        args=[run_check(str(monitor.id))],
+        args=[run_check, str(monitor.id)],
         replace_existing=True,
         misfire_grace_time=30,
     )
@@ -108,7 +111,7 @@ async def start_scheduler() -> None:
             trigger=IntervalTrigger(seconds=monitor.interval_seconds),
             id=job_id,
             name=f"check:{monitor.name}",
-            args=[run_check(str(monitor.id))],
+            args=[run_check, str(monitor.id)],
             replace_existing=True,
             misfire_grace_time=30,
         )
@@ -119,7 +122,7 @@ async def start_scheduler() -> None:
         trigger=CronTrigger(hour=2, minute=0, timezone="UTC"),
         id="retention_job",
         name="Delete check_results older than 90 days",
-        args=[delete_old_check_results()],
+        args=[delete_old_check_results],
         replace_existing=True,
     )
 

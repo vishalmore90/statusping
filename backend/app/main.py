@@ -12,10 +12,12 @@ from app.scheduler.jobs import start_scheduler, stop_scheduler
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Startup
-    await start_scheduler()
+    if settings.app_env != "test":
+        await start_scheduler()
     yield
     # Shutdown
-    await stop_scheduler()
+    if settings.app_env != "test":
+        await stop_scheduler()
 
 
 def create_app() -> FastAPI:

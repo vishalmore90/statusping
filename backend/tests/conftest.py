@@ -17,6 +17,7 @@ import asyncpg
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import pool
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -77,7 +78,7 @@ requires_db = pytest.mark.skipif(
 
 # ── Engine / session factory ──────────────────────────────────────────────────
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=pool.NullPool)
 TestSessionLocal = async_sessionmaker(
     test_engine,
     class_=AsyncSession,
@@ -106,18 +107,23 @@ async def db_session(
 ) -> AsyncGenerator[AsyncSession, None]:
     """
     Transactional AsyncSession rolled back after each test.
-    Automatically skipped when PostgreSQL is not reachable.
+    Uses savepoint mode so inner db.commit() calls inside route handlers
+    do not commit the outer test transaction.
     """
     if not _postgres_reachable():
         pytest.skip("PostgreSQL not reachable")
     async with test_engine.connect() as conn:
-        await conn.begin()
-        session = AsyncSession(bind=conn, expire_on_commit=False)
+        trans = await conn.begin()
+        session = AsyncSession(
+            bind=conn,
+            expire_on_commit=False,
+            join_transaction_mode="create_savepoint",
+        )
         try:
             yield session
         finally:
             await session.close()
-            await conn.rollback()
+            await trans.rollback()
 
 
 @pytest_asyncio.fixture
