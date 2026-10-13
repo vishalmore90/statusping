@@ -39,9 +39,7 @@ class StatusPageUpdate(BaseModel):
             return v
         v = v.lower().strip()
         if not _SLUG_RE.match(v):
-            raise ValueError(
-                "Slug must contain only lowercase letters, digits, and hyphens."
-            )
+            raise ValueError("Slug must contain only lowercase letters, digits, and hyphens.")
         return v
 
 

@@ -100,9 +100,7 @@ async def test_me_authenticated(db_client: AsyncClient) -> None:
     token = login_resp.json()["access_token"]
 
     # Call /me with the token
-    response = await db_client.get(
-        ME_URL, headers={"Authorization": f"Bearer {token}"}
-    )
+    response = await db_client.get(ME_URL, headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json()["email"] == VALID_USER["email"]
 
@@ -114,10 +112,7 @@ async def test_me_unauthenticated(client: AsyncClient) -> None:
     assert response.status_code in (401, 403)  # varies by FastAPI/Starlette version
 
 
-
 @pytest.mark.asyncio
 async def test_me_invalid_token(client: AsyncClient) -> None:
-    response = await client.get(
-        ME_URL, headers={"Authorization": "Bearer this.is.not.valid"}
-    )
+    response = await client.get(ME_URL, headers={"Authorization": "Bearer this.is.not.valid"})
     assert response.status_code == 401

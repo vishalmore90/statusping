@@ -7,7 +7,9 @@ class Settings(BaseSettings):
     # App
     app_env: str = "development"
     frontend_url: str = "http://localhost:3000"
-    allowed_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
+    allowed_origins: str = (
+        "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
+    )
 
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/statusping"

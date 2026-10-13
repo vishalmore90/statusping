@@ -1,6 +1,7 @@
 """Smoke test: /health endpoint must return 200 with status ok.
 Does not require a database connection.
 """
+
 import pytest
 from httpx import AsyncClient
 

@@ -35,9 +35,7 @@ async def _perform_http_check(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(follow_redirects=True) as client:
-            response = await client.get(
-                url, timeout=float(timeout_seconds)
-            )
+            response = await client.get(url, timeout=float(timeout_seconds))
         elapsed_ms = int((time.monotonic() - start) * 1000)
         code = response.status_code
         expected = expected_status_code or 200
@@ -93,7 +91,7 @@ async def _record_result(
     response_time_ms: int | None,
     status_code: int | None,
     error_message: str | None,
-) -> CheckResult:
+) -> tuple[CheckResult, str]:
     """Insert a CheckResult row and update monitor.current_status."""
     result = CheckResult(
         monitor_id=monitor.id,
@@ -110,7 +108,7 @@ async def _record_result(
     db.add(monitor)
 
     await db.flush()
-    return result, previous_status  # type: ignore[return-value]
+    return result, previous_status
 
 
 async def run_check(monitor_id: str) -> None:
@@ -129,14 +127,12 @@ async def run_check(monitor_id: str) -> None:
 
             # Perform the check
             if monitor.monitor_type == "http":
-                status, response_time_ms, status_code, error_message = (
-                    await _perform_http_check(
-                        monitor.url, monitor.timeout_seconds, monitor.expected_status_code
-                    )
+                status, response_time_ms, status_code, error_message = await _perform_http_check(
+                    monitor.url, monitor.timeout_seconds, monitor.expected_status_code
                 )
             else:
-                status, response_time_ms, status_code, error_message = (
-                    await _perform_tcp_check(monitor.url, monitor.timeout_seconds)
+                status, response_time_ms, status_code, error_message = await _perform_tcp_check(
+                    monitor.url, monitor.timeout_seconds
                 )
 
             check_result, previous_status = await _record_result(
@@ -189,9 +185,7 @@ async def delete_old_check_results() -> None:
     """
     cutoff = datetime.now(UTC) - timedelta(days=90)
     async with AsyncSessionLocal() as db:
-        await db.execute(
-            delete(CheckResult).where(CheckResult.checked_at < cutoff)
-        )
+        await db.execute(delete(CheckResult).where(CheckResult.checked_at < cutoff))
         await db.commit()
 
 

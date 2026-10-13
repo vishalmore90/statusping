@@ -27,9 +27,7 @@ class Monitor(Base):
         Index("ix_monitors_user_active", "user_id", "is_active"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -47,9 +45,7 @@ class Monitor(Base):
     expected_status_code: Mapped[int | None] = mapped_column(Integer, nullable=True, default=200)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     current_status: Mapped[str] = mapped_column(String(20), nullable=False, default="unknown")
-    last_checked_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

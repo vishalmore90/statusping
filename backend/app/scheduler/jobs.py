@@ -11,6 +11,8 @@ Design:
 
 import asyncio
 import logging
+from collections.abc import Coroutine
+from typing import Any
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -29,7 +31,7 @@ _scheduler = BackgroundScheduler(timezone="UTC")
 # ── Internal helper ───────────────────────────────────────────────────────────
 
 
-def _run_async(coro) -> None:  # type: ignore[type-arg]
+def _run_async(coro: Coroutine[Any, Any, Any]) -> None:
     """Run an async coroutine from a sync scheduler context."""
     asyncio.run(coro)
 

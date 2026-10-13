@@ -1,4 +1,5 @@
 """Check result schemas — implemented in Phase 4"""
+
 from pydantic import BaseModel
 
 

@@ -1,3 +1,4 @@
+import contextlib
 import re
 import uuid
 
@@ -44,7 +45,7 @@ async def register(
             )
         except ValueError:
             unique_slug = f"{default_slug}-{uuid.uuid4().hex[:4]}"
-            try:
+            with contextlib.suppress(ValueError):
                 await status_page_service.create_status_page(
                     db,
                     user_id=user.id,
@@ -52,8 +53,6 @@ async def register(
                     title=f"{body.name}'s Status Page",
                     description=f"Public status page for {body.name}.",
                 )
-            except ValueError:
-                pass
         await db.commit()
     except ValueError as exc:
         raise HTTPException(

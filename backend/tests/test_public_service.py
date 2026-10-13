@@ -88,10 +88,9 @@ def test_90d_uptime_all_up() -> None:
 
 def test_90d_uptime_half_down() -> None:
     mid = uuid.uuid4()
-    checks = (
-        [_make_check(mid, "up", i) for i in range(5)]
-        + [_make_check(mid, "down", i) for i in range(5, 10)]
-    )
+    checks = [_make_check(mid, "up", i) for i in range(5)] + [
+        _make_check(mid, "down", i) for i in range(5, 10)
+    ]
     assert _compute_90d_uptime(checks, mid) == 50.0
 
 

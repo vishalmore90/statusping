@@ -12,30 +12,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.status_page import StatusPage
 
 
-async def get_status_page_by_id(
-    db: AsyncSession, page_id: uuid.UUID
-) -> StatusPage | None:
-    result = await db.execute(
-        select(StatusPage).where(StatusPage.id == page_id)
-    )
+async def get_status_page_by_id(db: AsyncSession, page_id: uuid.UUID) -> StatusPage | None:
+    result = await db.execute(select(StatusPage).where(StatusPage.id == page_id))
     return result.scalar_one_or_none()
 
 
-async def get_status_page_by_slug(
-    db: AsyncSession, slug: str
-) -> StatusPage | None:
-    result = await db.execute(
-        select(StatusPage).where(StatusPage.slug == slug)
-    )
+async def get_status_page_by_slug(db: AsyncSession, slug: str) -> StatusPage | None:
+    result = await db.execute(select(StatusPage).where(StatusPage.slug == slug))
     return result.scalar_one_or_none()
 
 
-async def get_user_status_pages(
-    db: AsyncSession, user_id: uuid.UUID
-) -> list[StatusPage]:
-    result = await db.execute(
-        select(StatusPage).where(StatusPage.user_id == user_id)
-    )
+async def get_user_status_pages(db: AsyncSession, user_id: uuid.UUID) -> list[StatusPage]:
+    result = await db.execute(select(StatusPage).where(StatusPage.user_id == user_id))
     return list(result.scalars().all())
 
 

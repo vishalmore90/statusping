@@ -44,6 +44,12 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const sortedUpdates = useMemo(() => {
+    return [...(incident?.updates || [])].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [incident?.updates]);
+
   const handleManualRefresh = () => {
     setIsRefreshing(true);
     apiClient
@@ -172,11 +178,6 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
   }
 
   const isResolved = incident.status === "resolved" || incident.resolved_at !== null;
-  const sortedUpdates = useMemo(() => {
-    return [...(incident.updates || [])].sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  }, [incident.updates]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem", maxWidth: "860px", margin: "0 auto", width: "100%" }}>

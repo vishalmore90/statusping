@@ -12,9 +12,7 @@ from app.models.monitor import Monitor
 from app.services import status_page_service
 
 
-async def get_monitor_by_id(
-    db: AsyncSession, monitor_id: uuid.UUID
-) -> Monitor | None:
+async def get_monitor_by_id(db: AsyncSession, monitor_id: uuid.UUID) -> Monitor | None:
     result = await db.execute(select(Monitor).where(Monitor.id == monitor_id))
     return result.scalar_one_or_none()
 
@@ -79,6 +77,7 @@ async def create_monitor(
     await db.flush()
 
     from app.scheduler.jobs import add_monitor_job
+
     add_monitor_job(monitor)
     return monitor
 
@@ -120,12 +119,14 @@ async def update_monitor(
     await db.flush()
 
     from app.scheduler.jobs import reschedule_monitor_job
+
     reschedule_monitor_job(monitor)
     return monitor
 
 
 async def delete_monitor(db: AsyncSession, monitor: Monitor) -> None:
     from app.scheduler.jobs import remove_monitor_job
+
     remove_monitor_job(str(monitor.id))
     await db.delete(monitor)
     await db.flush()

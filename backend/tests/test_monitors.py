@@ -32,9 +32,7 @@ VALID_MONITOR = {
 async def _register_and_login(client: AsyncClient, user: dict) -> str:
     """Register a user and return their access token."""
     await client.post(REGISTER_URL, json=user)
-    resp = await client.post(
-        LOGIN_URL, json={"email": user["email"], "password": user["password"]}
-    )
+    resp = await client.post(LOGIN_URL, json={"email": user["email"], "password": user["password"]})
     return resp.json()["access_token"]
 
 
@@ -106,9 +104,7 @@ async def test_invalid_slug_format(db_client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_create_monitor_success(db_client: AsyncClient) -> None:
     token = await _register_and_login(db_client, USER_A)
-    resp = await db_client.post(
-        MONITORS_URL, json=VALID_MONITOR, headers=_auth(token)
-    )
+    resp = await db_client.post(MONITORS_URL, json=VALID_MONITOR, headers=_auth(token))
     assert resp.status_code == 201
     data = resp.json()
     assert data["name"] == VALID_MONITOR["name"]
@@ -164,14 +160,10 @@ async def test_get_monitor_not_found(db_client: AsyncClient) -> None:
 async def test_get_monitor_other_user_forbidden(db_client: AsyncClient) -> None:
     token_a = await _register_and_login(db_client, USER_A)
     token_b = await _register_and_login(db_client, USER_B)
-    create_resp = await db_client.post(
-        MONITORS_URL, json=VALID_MONITOR, headers=_auth(token_a)
-    )
+    create_resp = await db_client.post(MONITORS_URL, json=VALID_MONITOR, headers=_auth(token_a))
     monitor_id = create_resp.json()["id"]
     # User B tries to access User A's monitor
-    resp = await db_client.get(
-        f"{MONITORS_URL}/{monitor_id}", headers=_auth(token_b)
-    )
+    resp = await db_client.get(f"{MONITORS_URL}/{monitor_id}", headers=_auth(token_b))
     assert resp.status_code == 403
 
 
@@ -179,9 +171,7 @@ async def test_get_monitor_other_user_forbidden(db_client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_update_monitor(db_client: AsyncClient) -> None:
     token = await _register_and_login(db_client, USER_A)
-    create_resp = await db_client.post(
-        MONITORS_URL, json=VALID_MONITOR, headers=_auth(token)
-    )
+    create_resp = await db_client.post(MONITORS_URL, json=VALID_MONITOR, headers=_auth(token))
     monitor_id = create_resp.json()["id"]
     resp = await db_client.patch(
         f"{MONITORS_URL}/{monitor_id}",
@@ -197,16 +187,10 @@ async def test_update_monitor(db_client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_delete_monitor(db_client: AsyncClient) -> None:
     token = await _register_and_login(db_client, USER_A)
-    create_resp = await db_client.post(
-        MONITORS_URL, json=VALID_MONITOR, headers=_auth(token)
-    )
+    create_resp = await db_client.post(MONITORS_URL, json=VALID_MONITOR, headers=_auth(token))
     monitor_id = create_resp.json()["id"]
-    del_resp = await db_client.delete(
-        f"{MONITORS_URL}/{monitor_id}", headers=_auth(token)
-    )
+    del_resp = await db_client.delete(f"{MONITORS_URL}/{monitor_id}", headers=_auth(token))
     assert del_resp.status_code == 204
     # Confirm it's gone
-    get_resp = await db_client.get(
-        f"{MONITORS_URL}/{monitor_id}", headers=_auth(token)
-    )
+    get_resp = await db_client.get(f"{MONITORS_URL}/{monitor_id}", headers=_auth(token))
     assert get_resp.status_code == 404

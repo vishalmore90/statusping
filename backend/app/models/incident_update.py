@@ -13,15 +13,11 @@ INCIDENT_STATUSES = ("investigating", "identified", "monitoring", "resolved")
 class IncidentUpdate(Base):
     __tablename__ = "incident_updates"
     __table_args__ = (
-        CheckConstraint(
-            f"status IN {INCIDENT_STATUSES}", name="ck_incident_update_status"
-        ),
+        CheckConstraint(f"status IN {INCIDENT_STATUSES}", name="ck_incident_update_status"),
         Index("ix_incident_updates_incident_time", "incident_id", "created_at"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     incident_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("incidents.id", ondelete="CASCADE"),

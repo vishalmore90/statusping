@@ -88,9 +88,7 @@ async def test_http_check_connection_error() -> None:
     mock_client = AsyncMock()
     mock_client.__aenter__ = AsyncMock(return_value=mock_client)
     mock_client.__aexit__ = AsyncMock(return_value=False)
-    mock_client.get = AsyncMock(
-        side_effect=httpx.ConnectError("refused", request=MagicMock())
-    )
+    mock_client.get = AsyncMock(side_effect=httpx.ConnectError("refused", request=MagicMock()))
 
     with patch("app.services.check_service.httpx.AsyncClient", return_value=mock_client):
         status, rt_ms, code, err = await _perform_http_check(

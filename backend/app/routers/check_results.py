@@ -56,7 +56,9 @@ class UptimeStatsResponse(BaseModel):
 async def get_check_history(
     monitor_id: uuid.UUID,
     limit: int = Query(default=100, ge=1, le=500),
-    before: datetime | None = Query(default=None, description="Cursor: return results before this ISO timestamp"),
+    before: datetime | None = Query(
+        default=None, description="Cursor: return results before this ISO timestamp"
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> CheckHistoryResponse:
@@ -114,11 +116,8 @@ async def get_uptime_stats(
         )
     )
     checks_24h = result.scalars().all()
-    avg_rt = (
-        round(sum(r.response_time_ms for r in checks_24h) / len(checks_24h), 1)
-        if checks_24h
-        else None
-    )
+    valid_rts = [r.response_time_ms for r in checks_24h if r.response_time_ms is not None]
+    avg_rt = round(sum(valid_rts) / len(valid_rts), 1) if valid_rts else None
 
     return UptimeStatsResponse(
         monitor_id=monitor_id,

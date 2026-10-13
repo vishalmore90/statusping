@@ -43,6 +43,7 @@ include = ["app", "alembic", "alembic.ini", "pyproject.toml"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+extend-exclude = ["alembic"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM"]

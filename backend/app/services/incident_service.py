@@ -208,8 +208,7 @@ async def auto_create_incident(db: AsyncSession, monitor: Monitor) -> Incident |
         status_page_id=monitor.status_page_id,
         monitor_id=monitor.id,
         initial_message=(
-            f"We have detected that {monitor.name} is unreachable. "
-            "We are investigating the issue."
+            f"We have detected that {monitor.name} is unreachable. We are investigating the issue."
         ),
     )
 

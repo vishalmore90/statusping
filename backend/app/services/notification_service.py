@@ -56,7 +56,7 @@ async def send_downtime_alert(
     <h2 style="color:#dc2626">Monitor Down: {monitor.name}</h2>
     <p><strong>URL:</strong> {monitor.url}</p>
     <p><strong>Incident:</strong> {incident.title}</p>
-    <p><strong>Started at:</strong> {incident.started_at.strftime('%Y-%m-%d %H:%M UTC')}</p>
+    <p><strong>Started at:</strong> {incident.started_at.strftime("%Y-%m-%d %H:%M UTC")}</p>
     <p>We are investigating the issue. You will receive another email when the monitor recovers.</p>
     <hr>
     <p style="color:#6b7280;font-size:12px">StatusPing — uptime monitoring</p>

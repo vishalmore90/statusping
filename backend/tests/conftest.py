@@ -8,13 +8,16 @@ Test strategy:
 - In CI the PostgreSQL service container is always available.
 """
 
+import asyncio
 import os
 import socket
 from collections.abc import AsyncGenerator
 
+import asyncpg
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.database import Base, get_db
@@ -26,11 +29,6 @@ TEST_DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/statusping_test",
 )
-
-
-import asyncio
-import asyncpg
-from sqlalchemy.engine.url import make_url
 
 _reachable_cache: bool | None = None
 

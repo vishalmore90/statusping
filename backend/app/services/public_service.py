@@ -74,7 +74,11 @@ def _build_daily_bars(
     by_date: dict[date, list[str]] = defaultdict(list)
     for r in results:
         if r.monitor_id == monitor_id:
-            day = r.checked_at.date() if r.checked_at.tzinfo is None else r.checked_at.astimezone(UTC).date()
+            day = (
+                r.checked_at.date()
+                if r.checked_at.tzinfo is None
+                else r.checked_at.astimezone(UTC).date()
+            )
             by_date[day].append(r.status)
 
     today = datetime.now(UTC).date()
@@ -113,9 +117,7 @@ def _compute_avg_response_time(results: list[CheckResult], monitor_id: object) -
 # ── Main aggregation ──────────────────────────────────────────────────────────
 
 
-async def get_public_status_page(
-    db: AsyncSession, slug: str
-) -> PublicStatusPage | None:
+async def get_public_status_page(db: AsyncSession, slug: str) -> PublicStatusPage | None:
     """
     Build the full public status page response.
     Returns None if the slug doesn't exist or the page is not public.
@@ -141,17 +143,19 @@ async def get_public_status_page(
 
     # 3. Load last 90 days of check results for ALL monitors in one query
     since_90d = datetime.now(UTC) - timedelta(days=90)
-    checks_result = await db.execute(
-        select(CheckResult).where(
-            and_(
-                CheckResult.monitor_id.in_(monitor_ids),
-                CheckResult.checked_at >= since_90d,
+    checks_result = (
+        await db.execute(
+            select(CheckResult).where(
+                and_(
+                    CheckResult.monitor_id.in_(monitor_ids),
+                    CheckResult.checked_at >= since_90d,
+                )
             )
         )
-    ) if monitor_ids else None
-    all_checks: list[CheckResult] = (
-        list(checks_result.scalars().all()) if checks_result else []
+        if monitor_ids
+        else None
     )
+    all_checks: list[CheckResult] = list(checks_result.scalars().all()) if checks_result else []
 
     # 4. Build public monitor list
     public_monitors: list[PublicMonitor] = []
@@ -174,8 +178,7 @@ async def get_public_status_page(
         .where(
             and_(
                 Incident.status_page_id == page.id,
-                (Incident.resolved_at.is_(None))
-                | (Incident.resolved_at >= since_14d),
+                (Incident.resolved_at.is_(None)) | (Incident.resolved_at >= since_14d),
             )
         )
         .options(selectinload(Incident.updates))
