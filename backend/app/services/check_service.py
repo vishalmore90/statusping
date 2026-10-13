@@ -5,6 +5,7 @@ Each check job creates its own DB session (runs outside FastAPI request context)
 Status transitions trigger notification hooks (stubbed → Phase 5).
 """
 
+import asyncio
 import time
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -48,6 +49,41 @@ async def _perform_http_check(
     except httpx.RequestError as exc:
         elapsed_ms = int((time.monotonic() - start) * 1000)
         return "down", elapsed_ms, None, f"Request error: {type(exc).__name__}"
+
+
+async def _perform_tcp_check(
+    target: str,
+    timeout_seconds: int,
+) -> tuple[str, int | None, int | None, str | None]:
+    """
+    Perform a TCP socket connection check to host:port.
+
+    Returns:
+        (status, response_time_ms, actual_status_code, error_message)
+    """
+    start = time.monotonic()
+    try:
+        clean_target = target.replace("tcp://", "").strip()
+        if ":" in clean_target:
+            host, port_str = clean_target.rsplit(":", 1)
+            port = int(port_str)
+        else:
+            host, port = clean_target, 80
+
+        _, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port),
+            timeout=float(timeout_seconds),
+        )
+        writer.close()
+        await writer.wait_closed()
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "up", elapsed_ms, None, None
+    except TimeoutError:
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "down", elapsed_ms, None, "Connection timed out"
+    except Exception as exc:
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "down", elapsed_ms, None, f"TCP connection error: {exc}"
 
 
 async def _record_result(
@@ -99,9 +135,8 @@ async def run_check(monitor_id: str) -> None:
                     )
                 )
             else:
-                # TCP: Phase 4 MVP uses HTTP only; TCP left for post-MVP
                 status, response_time_ms, status_code, error_message = (
-                    "down", None, None, "TCP checks not yet implemented"
+                    await _perform_tcp_check(monitor.url, monitor.timeout_seconds)
                 )
 
             check_result, previous_status = await _record_result(

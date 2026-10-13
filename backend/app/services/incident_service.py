@@ -17,6 +17,7 @@ from sqlalchemy.orm import selectinload
 from app.models.incident import Incident
 from app.models.incident_update import IncidentUpdate
 from app.models.monitor import Monitor
+from app.models.status_page import StatusPage
 
 # ── Lookup helpers ────────────────────────────────────────────────────────────
 
@@ -87,6 +88,12 @@ async def create_incident(
     monitor_id: uuid.UUID | None = None,
     initial_message: str | None = None,
 ) -> Incident:
+    if status_page_id is None:
+        page_res = await db.execute(
+            select(StatusPage.id).where(StatusPage.user_id == user_id).limit(1)
+        )
+        status_page_id = page_res.scalar_one_or_none()
+
     incident = Incident(
         user_id=user_id,
         title=title,
@@ -106,6 +113,7 @@ async def create_incident(
     )
     db.add(first_update)
     await db.flush()
+    incident.updates = [first_update]
     return incident
 
 
@@ -143,6 +151,10 @@ async def resolve_incident(db: AsyncSession, incident: Incident) -> Incident:
     )
     db.add(resolution)
     await db.flush()
+    if "updates" in incident.__dict__ and isinstance(incident.updates, list):
+        incident.updates.insert(0, resolution)
+    else:
+        incident.updates = [resolution]
     return incident
 
 

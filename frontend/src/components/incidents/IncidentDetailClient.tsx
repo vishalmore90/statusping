@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -102,7 +102,7 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
           ...prev,
           status: updateStatus,
           resolved_at: updateStatus === "resolved" ? new Date().toISOString() : prev.resolved_at,
-          updates: [...(prev.updates || []), res.data],
+          updates: [res.data, ...(prev.updates || [])],
         };
       });
 
@@ -172,7 +172,11 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
   }
 
   const isResolved = incident.status === "resolved" || incident.resolved_at !== null;
-  const updates = incident.updates || [];
+  const sortedUpdates = useMemo(() => {
+    return [...(incident.updates || [])].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [incident.updates]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem", maxWidth: "860px", margin: "0 auto", width: "100%" }}>
@@ -343,7 +347,7 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <h3 style={{ fontSize: "1.25rem", fontWeight: 600 }}>Update Timeline</h3>
 
-        {updates.length === 0 ? (
+        {sortedUpdates.length === 0 ? (
           <Card style={{ padding: "2.5rem", textAlign: "center", color: "var(--text-muted)", fontSize: "0.875rem" }}>
             No updates posted yet. Use the form above to post the first update.
           </Card>
@@ -362,7 +366,7 @@ export function IncidentDetailClient({ incidentId }: IncidentDetailClientProps) 
               }}
             />
 
-            {updates.slice().reverse().map((upd) => (
+            {sortedUpdates.map((upd) => (
               <div
                 key={upd.id}
                 style={{

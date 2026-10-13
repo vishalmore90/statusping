@@ -308,15 +308,17 @@ export function MonitorDetailClient({ monitorId }: MonitorDetailClientProps) {
               }}
             >
               <span>{monitor.url}</span>
-              <a
-                href={monitor.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Open URL in new tab"
-                style={{ color: "var(--text-muted)", display: "flex", alignItems: "center" }}
-              >
-                <ExternalLink size={14} />
-              </a>
+              {monitor.monitor_type === "http" && (
+                <a
+                  href={monitor.url.startsWith("http://") || monitor.url.startsWith("https://") ? monitor.url : `https://${monitor.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open URL in new tab"
+                  style={{ color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                >
+                  <ExternalLink size={14} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -548,7 +550,8 @@ export function MonitorDetailClient({ monitorId }: MonitorDetailClientProps) {
             required
           />
           <Input
-            label="Target URL"
+            label={monitor.monitor_type === "tcp" ? "Host / Host:Port" : "Target URL"}
+            placeholder={monitor.monitor_type === "tcp" ? "db.example.com:5432" : "https://api.example.com/health"}
             value={editUrl}
             onChange={(e) => setEditUrl(e.target.value)}
             required

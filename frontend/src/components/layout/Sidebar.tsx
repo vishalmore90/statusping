@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   ExternalLink,
   PlusCircle,
+  Globe,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -31,6 +32,12 @@ export function Sidebar() {
       title: "Incidents",
       href: "/dashboard/incidents",
       icon: <AlertTriangle size={18} />,
+      exact: false,
+    },
+    {
+      title: "Public Status Page",
+      href: "/status/demo",
+      icon: <Globe size={18} />,
       exact: false,
     },
   ];

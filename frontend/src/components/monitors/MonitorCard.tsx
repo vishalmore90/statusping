@@ -183,16 +183,18 @@ export function MonitorCard({ monitor, onToggleActive, onDelete }: MonitorCardPr
               }}
             >
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{monitor.url}</span>
-              <a
-                href={monitor.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                title="Open URL in new tab"
-                style={{ color: "var(--text-muted)", display: "flex", alignItems: "center" }}
-              >
-                <ExternalLink size={12} />
-              </a>
+              {monitor.monitor_type === "http" && (
+                <a
+                  href={monitor.url.startsWith("http://") || monitor.url.startsWith("https://") ? monitor.url : `https://${monitor.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Open URL in new tab"
+                  style={{ color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                >
+                  <ExternalLink size={12} />
+                </a>
+              )}
             </div>
           </div>
 

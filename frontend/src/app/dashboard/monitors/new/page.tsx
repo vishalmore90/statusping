@@ -37,9 +37,16 @@ export default function NewMonitorPage() {
 
     // Validation
     const cleanUrl = url.trim();
-    if (!cleanUrl.startsWith("http://") && !cleanUrl.startsWith("https://")) {
-      setErrorMessage("Endpoint URL must start with http:// or https://");
-      return;
+    if (monitorType === "http") {
+      if (!cleanUrl.startsWith("http://") && !cleanUrl.startsWith("https://")) {
+        setErrorMessage("HTTP endpoint URL must start with http:// or https://");
+        return;
+      }
+    } else {
+      if (!cleanUrl) {
+        setErrorMessage("TCP target must specify host and port (e.g. localhost:5432)");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -127,7 +134,10 @@ export default function NewMonitorPage() {
             </label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <div
-                onClick={() => setMonitorType("http")}
+                onClick={() => {
+                  setMonitorType("http");
+                  if (url === "localhost:5432") setUrl("https://");
+                }}
                 style={{
                   padding: "1rem",
                   borderRadius: "var(--radius-md)",
@@ -156,7 +166,10 @@ export default function NewMonitorPage() {
               </div>
 
               <div
-                onClick={() => setMonitorType("tcp")}
+                onClick={() => {
+                  setMonitorType("tcp");
+                  if (url === "https://") setUrl("localhost:5432");
+                }}
                 style={{
                   padding: "1rem",
                   borderRadius: "var(--radius-md)",
@@ -200,14 +213,18 @@ export default function NewMonitorPage() {
           {/* URL / Endpoint */}
           <Input
             id="url"
-            label={monitorType === "http" ? "Target URL" : "Target Address"}
-            type="url"
-            placeholder={monitorType === "http" ? "https://api.example.com/healthz" : "http://db.internal.example.com:5432"}
+            label={monitorType === "http" ? "Target URL" : "Host & Port"}
+            type={monitorType === "http" ? "url" : "text"}
+            placeholder={monitorType === "http" ? "https://api.example.com/healthz" : "localhost:5432"}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             required
-            leftIcon={<Globe size={16} />}
-            helperText="Must start with http:// or https://"
+            leftIcon={monitorType === "http" ? <Globe size={16} /> : <Radio size={16} />}
+            helperText={
+              monitorType === "http"
+                ? "Must start with http:// or https://"
+                : "Host and port to ping (e.g. localhost:5432 or db.example.com:3306)"
+            }
           />
 
           {/* Expected Status Code (HTTP only) */}

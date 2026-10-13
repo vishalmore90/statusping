@@ -59,6 +59,10 @@ async def create_monitor(
 ) -> Monitor:
     if status_page_id is not None:
         await _verify_status_page_ownership(db, status_page_id, user_id)
+    else:
+        user_pages = await status_page_service.get_user_status_pages(db, user_id)
+        if user_pages:
+            status_page_id = user_pages[0].id
 
     monitor = Monitor(
         user_id=user_id,

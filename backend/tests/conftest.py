@@ -28,18 +28,53 @@ TEST_DATABASE_URL = os.getenv(
 )
 
 
+import asyncio
+import asyncpg
+from sqlalchemy.engine.url import make_url
+
+_reachable_cache: bool | None = None
+
+
 def _postgres_reachable() -> bool:
-    """Return True if PostgreSQL is accepting connections on localhost:5432."""
+    """Return True if PostgreSQL is reachable and authenticates with TEST_DATABASE_URL."""
+    global _reachable_cache
+    if _reachable_cache is not None:
+        return _reachable_cache
+
+    parsed = make_url(TEST_DATABASE_URL)
+    host = parsed.host or "localhost"
+    port = parsed.port or 5432
+
     try:
-        with socket.create_connection(("localhost", 5432), timeout=1):
-            return True
+        with socket.create_connection((host, port), timeout=1):
+            pass
     except OSError:
+        _reachable_cache = False
         return False
+
+    async def _probe() -> None:
+        conn = await asyncpg.connect(
+            user=parsed.username or "postgres",
+            password=parsed.password or "postgres",
+            database=parsed.database or "statusping_test",
+            host=host,
+            port=port,
+            timeout=2,
+        )
+        await conn.close()
+
+    try:
+        asyncio.run(_probe())
+        _reachable_cache = True
+    except Exception:
+        _reachable_cache = False
+
+    return _reachable_cache
 
 
 requires_db = pytest.mark.skipif(
     not _postgres_reachable(),
-    reason="PostgreSQL not reachable on localhost:5432 — skipping DB tests",
+    reason="PostgreSQL not reachable or credentials failed on localhost:5432 — skipping DB tests",
 )
 
 # ── Engine / session factory ──────────────────────────────────────────────────

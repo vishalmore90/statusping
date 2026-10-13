@@ -184,3 +184,33 @@ async def test_compute_uptime_no_results() -> None:
 
     uptime = await compute_uptime(mock_db, monitor_id, days=1)
     assert uptime == 100.0
+
+
+@pytest.mark.asyncio
+async def test_tcp_check_up() -> None:
+    """Successful TCP connection → 'up'."""
+    from app.services.check_service import _perform_tcp_check
+
+    mock_writer = AsyncMock()
+    mock_writer.close = MagicMock()
+    mock_writer.wait_closed = AsyncMock()
+
+    with patch("asyncio.open_connection", new=AsyncMock(return_value=(AsyncMock(), mock_writer))):
+        status, rt_ms, code, err = await _perform_tcp_check("localhost:5432", timeout_seconds=5)
+
+    assert status == "up"
+    assert code is None
+    assert err is None
+    assert rt_ms is not None and rt_ms >= 0
+
+
+@pytest.mark.asyncio
+async def test_tcp_check_connection_error() -> None:
+    """Connection refused on TCP → 'down'."""
+    from app.services.check_service import _perform_tcp_check
+
+    with patch("asyncio.open_connection", side_effect=ConnectionRefusedError("Connection refused")):
+        status, rt_ms, code, err = await _perform_tcp_check("localhost:9999", timeout_seconds=5)
+
+    assert status == "down"
+    assert err is not None and "TCP connection error" in err
