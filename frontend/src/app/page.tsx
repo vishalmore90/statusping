@@ -30,9 +30,9 @@ export default function Home() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* 1. Hero Section */}
       <section
+        className="section-hero"
         style={{
           position: "relative",
-          padding: "7.5rem 2rem 5rem",
           overflow: "hidden",
         }}
       >
@@ -44,7 +44,7 @@ export default function Home() {
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
-            gap: "2.25rem",
+            gap: "2rem",
           }}
         >
           {/* Architectural Badge (No Pill Shape) */}
@@ -52,7 +52,9 @@ export default function Home() {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "0.625rem",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: "0.5rem",
               padding: "0.45rem 1rem",
               borderRadius: "var(--radius-md)",
               backgroundColor: "var(--bg-surface-elevated)",
@@ -60,31 +62,37 @@ export default function Home() {
               fontSize: "0.8125rem",
               color: "var(--text-secondary)",
               fontWeight: 500,
+              maxWidth: "100%",
+              textAlign: "center",
             }}
           >
-            <span
-              style={{
-                display: "inline-block",
-                width: "8px",
-                height: "8px",
-                borderRadius: "2px",
-                backgroundColor: "var(--status-up)",
-              }}
-            />
-            <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>StatusPing 1.0</span>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "2px",
+                  backgroundColor: "var(--status-up)",
+                }}
+              />
+              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>StatusPing 1.0</span>
+            </div>
             <span style={{ color: "var(--border-default)" }}>|</span>
             <span>Self-Hosted & Cloud Uptime Monitoring</span>
           </div>
 
-          {/* Headline - Bigger, Punchy, High-Contrast Text */}
+          {/* Headline - Responsive Clamp, Word Break Safe */}
           <h1
             style={{
-              fontSize: "clamp(2.75rem, 6.5vw, 4.5rem)",
+              fontSize: "clamp(2rem, 7vw, 4.25rem)",
               fontWeight: 800,
-              lineHeight: 1.12,
+              lineHeight: 1.15,
               letterSpacing: "-0.035em",
               maxWidth: "840px",
+              width: "100%",
               color: "var(--text-primary)",
+              wordBreak: "break-word",
             }}
           >
             Know when your APIs go down{" "}
@@ -93,12 +101,13 @@ export default function Home() {
             </span>
           </h1>
 
-          {/* Subtitle - Cut in half, punchy */}
+          {/* Subtitle - Punchy, High-Contrast */}
           <p
             style={{
-              fontSize: "1.25rem",
+              fontSize: "clamp(1.0625rem, 3vw, 1.25rem)",
               color: "var(--text-secondary)",
               maxWidth: "620px",
+              width: "100%",
               lineHeight: 1.6,
               fontWeight: 400,
             }}
@@ -107,7 +116,7 @@ export default function Home() {
           </p>
 
           {/* Single Primary Action Button */}
-          <div style={{ paddingTop: "0.5rem" }}>
+          <div style={{ paddingTop: "0.25rem" }}>
             <Link href="/register">
               <Button size="lg" variant="primary" rightIcon={<ArrowRight size={18} />}>
                 Start Monitoring Free
@@ -120,12 +129,13 @@ export default function Home() {
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: "2.5rem",
+              gap: "1.25rem 2rem",
               justifyContent: "center",
               alignItems: "center",
-              paddingTop: "2rem",
+              paddingTop: "1.5rem",
               color: "var(--text-secondary)",
               fontSize: "0.875rem",
+              width: "100%",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -145,7 +155,7 @@ export default function Home() {
       </section>
 
       {/* 2. Live Monitor Preview Card Section */}
-      <section style={{ padding: "0 2rem 6rem" }}>
+      <section className="section-card">
         <div className="container-narrow">
           <Card
             elevated
@@ -154,19 +164,20 @@ export default function Home() {
               boxShadow: "var(--shadow-lg)",
               borderRadius: "var(--radius-lg)",
               overflow: "hidden",
+              width: "100%",
             }}
           >
             {/* Header bar */}
             <div
+              className="preview-card-header"
               style={{
-                padding: "1.25rem 1.75rem",
                 borderBottom: "1px solid var(--border-subtle)",
                 backgroundColor: "var(--bg-surface)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 flexWrap: "wrap",
-                gap: "1rem",
+                gap: "0.75rem",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -179,93 +190,101 @@ export default function Home() {
             </div>
 
             {/* Monitor Rows */}
-            <div style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div className="preview-card-body" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               {/* Row 1 */}
               <div
                 style={{
-                  padding: "1.25rem",
+                  padding: "1rem",
                   backgroundColor: "var(--bg-surface-elevated)",
                   borderRadius: "var(--radius-md)",
                   border: "1px solid var(--border-subtle)",
                   display: "flex",
                   flexDirection: "column",
-                  gap: "1rem",
+                  gap: "0.875rem",
+                  width: "100%",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                     flexWrap: "wrap",
                     gap: "0.5rem",
+                    width: "100%",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0, maxWidth: "100%" }}>
                     <div
                       style={{
                         width: "10px",
                         height: "10px",
                         borderRadius: "2px",
                         backgroundColor: "var(--status-up)",
+                        flexShrink: 0,
                       }}
                     />
-                    <div>
-                      <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.9375rem" }}>
                         Production API Gateway
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", wordBreak: "break-all" }}>
                         https://api.example.com/healthz • 42ms response
                       </div>
                     </div>
                   </div>
                   <Badge variant="up">Operational</Badge>
                 </div>
-                <UptimeBar data={sampleUptimeData} height={28} overallUptime={99.98} />
+                <UptimeBar data={sampleUptimeData} height={24} overallUptime={99.98} />
               </div>
 
               {/* Row 2 */}
               <div
                 style={{
-                  padding: "1.25rem",
+                  padding: "1rem",
                   backgroundColor: "var(--bg-surface-elevated)",
                   borderRadius: "var(--radius-md)",
                   border: "1px solid var(--border-subtle)",
                   display: "flex",
                   flexDirection: "column",
-                  gap: "1rem",
+                  gap: "0.875rem",
+                  width: "100%",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                     flexWrap: "wrap",
                     gap: "0.5rem",
+                    width: "100%",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0, maxWidth: "100%" }}>
                     <div
                       style={{
                         width: "10px",
                         height: "10px",
                         borderRadius: "2px",
                         backgroundColor: "var(--status-up)",
+                        flexShrink: 0,
                       }}
                     />
-                    <div>
-                      <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.9375rem" }}>
                         PostgreSQL Primary Cluster
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", wordBreak: "break-all" }}>
                         db.internal.example.com:5432 • TCP Socket Check
                       </div>
                     </div>
                   </div>
                   <Badge variant="up">Connected</Badge>
                 </div>
-                <UptimeBar data={sampleUptimeData} height={28} overallUptime={100.0} />
+                <UptimeBar data={sampleUptimeData} height={24} overallUptime={100.0} />
               </div>
             </div>
           </Card>
@@ -275,8 +294,8 @@ export default function Home() {
       {/* 3. Core Architecture Features Grid */}
       <section
         id="features"
+        className="section-features"
         style={{
-          padding: "6rem 2rem",
           backgroundColor: "var(--bg-surface)",
           borderTop: "1px solid var(--border-subtle)",
           borderBottom: "1px solid var(--border-subtle)",
@@ -287,15 +306,15 @@ export default function Home() {
             style={{
               textAlign: "center",
               maxWidth: "640px",
-              margin: "0 auto 4rem",
+              margin: "0 auto 3rem",
               display: "flex",
               flexDirection: "column",
-              gap: "1rem",
+              gap: "0.875rem",
             }}
           >
             <h2
               style={{
-                fontSize: "2.5rem",
+                fontSize: "clamp(1.75rem, 5vw, 2.5rem)",
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
                 color: "var(--text-primary)",
@@ -303,7 +322,7 @@ export default function Home() {
             >
               Engineered for clarity and uptime
             </h2>
-            <p style={{ color: "var(--text-secondary)", fontSize: "1.125rem", lineHeight: 1.6 }}>
+            <p style={{ color: "var(--text-secondary)", fontSize: "1.0625rem", lineHeight: 1.6 }}>
               Synthetic probes, instant alerts, and SLA transparency without complexity.
             </p>
           </div>
@@ -311,12 +330,12 @@ export default function Home() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "2rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+              gap: "1.5rem",
             }}
           >
             {/* Feature 1 */}
-            <Card style={{ padding: "2rem", borderRadius: "var(--radius-md)" }}>
+            <Card className="feature-card" style={{ borderRadius: "var(--radius-md)" }}>
               <div
                 style={{
                   width: "44px",
@@ -341,7 +360,7 @@ export default function Home() {
             </Card>
 
             {/* Feature 2 */}
-            <Card style={{ padding: "2rem", borderRadius: "var(--radius-md)" }}>
+            <Card className="feature-card" style={{ borderRadius: "var(--radius-md)" }}>
               <div
                 style={{
                   width: "44px",
@@ -366,7 +385,7 @@ export default function Home() {
             </Card>
 
             {/* Feature 3 */}
-            <Card style={{ padding: "2rem", borderRadius: "var(--radius-md)" }}>
+            <Card className="feature-card" style={{ borderRadius: "var(--radius-md)" }}>
               <div
                 style={{
                   width: "44px",
@@ -391,7 +410,7 @@ export default function Home() {
             </Card>
 
             {/* Feature 4 */}
-            <Card style={{ padding: "2rem", borderRadius: "var(--radius-md)" }}>
+            <Card className="feature-card" style={{ borderRadius: "var(--radius-md)" }}>
               <div
                 style={{
                   width: "44px",
@@ -421,24 +440,24 @@ export default function Home() {
       {/* 4. Real Creator Note (Real Photo & Name) */}
       <section
         id="about"
+        className="section-about"
         style={{
-          padding: "6rem 2rem",
           borderBottom: "1px solid var(--border-subtle)",
         }}
       >
         <div className="container-narrow">
           <Card
+            className="about-card"
             style={{
-              padding: "2.5rem",
               borderRadius: "var(--radius-lg)",
               border: "1px solid var(--border-default)",
               display: "flex",
               flexDirection: "column",
-              gap: "1.5rem",
+              gap: "1.25rem",
               backgroundColor: "var(--bg-surface)",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
               {/* Real Photo of Vishal More */}
               <img
                 src="https://github.com/vishalmore90.png"
@@ -449,6 +468,7 @@ export default function Home() {
                   borderRadius: "var(--radius-md)",
                   objectFit: "cover",
                   border: "1px solid var(--border-default)",
+                  flexShrink: 0,
                 }}
               />
               <div>
@@ -475,11 +495,11 @@ export default function Home() {
       </section>
 
       {/* 5. Final CTA Section (Single Button, Identical Style) */}
-      <section style={{ padding: "7rem 2rem" }}>
+      <section className="section-cta">
         <div className="container-narrow">
           <div
+            className="cta-card"
             style={{
-              padding: "4rem 2rem",
               borderRadius: "var(--radius-lg)",
               backgroundColor: "var(--bg-surface)",
               border: "1px solid var(--border-default)",
@@ -488,12 +508,12 @@ export default function Home() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "1.75rem",
+              gap: "1.5rem",
             }}
           >
             <h2
               style={{
-                fontSize: "2.5rem",
+                fontSize: "clamp(1.75rem, 5vw, 2.5rem)",
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
                 color: "var(--text-primary)",
@@ -505,7 +525,7 @@ export default function Home() {
               style={{
                 color: "var(--text-secondary)",
                 maxWidth: "500px",
-                fontSize: "1.125rem",
+                fontSize: "1.0625rem",
                 lineHeight: 1.6,
               }}
             >

@@ -25,12 +25,12 @@ export function Footer() {
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-start",
             gap: "2rem",
           }}
         >
           {/* Logo & description */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: "340px", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <div
                 style={{
@@ -41,6 +41,7 @@ export function Footer() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
                 <Activity size={14} color="#0a0d12" strokeWidth={2.5} />
@@ -49,7 +50,7 @@ export function Footer() {
                 StatusPing
               </span>
             </div>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", maxWidth: "340px" }}>
+            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
               Open-source synthetic monitoring and incident communication for engineering reliability.
             </p>
           </div>
@@ -60,7 +61,7 @@ export function Footer() {
               display: "flex",
               alignItems: "center",
               flexWrap: "wrap",
-              gap: "2rem",
+              gap: "1rem 2rem",
               fontSize: "0.875rem",
               color: "var(--text-secondary)",
             }}
@@ -80,7 +81,7 @@ export function Footer() {
               rel="noopener noreferrer"
               style={{ color: "var(--text-secondary)", textDecoration: "none" }}
             >
-              GitHub
+              GitHub ↗
             </a>
           </div>
         </div>

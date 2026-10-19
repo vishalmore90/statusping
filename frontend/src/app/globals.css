@@ -101,8 +101,8 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.04) 0%, transparent 40%);
+    radial-gradient(ellipse at 50% 0%, rgba(16, 185, 129, 0.07) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
@@ -234,4 +234,120 @@ input, select, textarea {
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .container,
+  .container-narrow {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Responsive Section Spacing */
+.section-hero {
+  padding: 4.5rem 0.5rem 3.5rem;
+}
+.section-card {
+  padding: 0 0.5rem 4rem;
+}
+.section-features {
+  padding: 4.5rem 0.5rem;
+}
+.section-about {
+  padding: 4.5rem 0.5rem;
+}
+.section-cta {
+  padding: 4.5rem 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-hero {
+    padding: 7.5rem 2rem 5rem;
+  }
+  .section-card {
+    padding: 0 2rem 6rem;
+  }
+  .section-features {
+    padding: 6rem 2rem;
+  }
+  .section-about {
+    padding: 6rem 2rem;
+  }
+  .section-cta {
+    padding: 7rem 2rem;
+  }
+}
+
+/* Responsive Component Padding */
+.preview-card-body {
+  padding: 1rem;
+}
+.preview-card-header {
+  padding: 1rem 1.25rem;
+}
+.feature-card {
+  padding: 1.5rem;
+}
+.about-card {
+  padding: 1.5rem;
+}
+.cta-card {
+  padding: 2.5rem 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .preview-card-body {
+    padding: 1.75rem;
+  }
+  .preview-card-header {
+    padding: 1.25rem 1.75rem;
+  }
+  .feature-card {
+    padding: 2rem;
+  }
+  .about-card {
+    padding: 2.5rem;
+  }
+  .cta-card {
+    padding: 4rem 2rem;
+  }
+}
+
+/* Responsive Uptime Bar Slots Track */
+.uptime-slots-track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .uptime-slots-track {
+    gap: 1px;
+  }
+}
+
+/* Responsive Navbar Display */
+.nav-desktop-links {
+  display: none !important;
+}
+.nav-desktop-actions {
+  display: none !important;
+}
+.nav-mobile-btn {
+  display: inline-flex !important;
+}
+
+@media (min-width: 769px) {
+  .nav-desktop-links {
+    display: flex !important;
+  }
+  .nav-desktop-actions {
+    display: flex !important;
+  }
+  .nav-mobile-btn {
+    display: none !important;
+  }
 }

@@ -94,11 +94,8 @@ export function UptimeBar({
 
       {/* 90-day segments container */}
       <div
+        className="uptime-slots-track"
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "2.5px",
-          width: "100%",
           height: `${height}px`,
         }}
       >
@@ -108,9 +105,10 @@ export function UptimeBar({
             <div
               key={slot.index}
               style={{
-                flex: 1,
+                flex: "1 1 0px",
+                minWidth: 0,
                 height: "100%",
-                borderRadius: "3px",
+                borderRadius: "2px",
                 backgroundColor: color,
                 transition: "transform 120ms ease, opacity 120ms ease",
                 cursor: "pointer",
