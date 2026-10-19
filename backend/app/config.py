@@ -44,7 +44,13 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        return [origin.strip() for origin in self.allowed_origins.split(",")]
+        origins = [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
+        if self.frontend_url and self.frontend_url.strip() not in origins:
+            origins.append(self.frontend_url.strip())
+        vercel_canonical = "https://statusping-rho.vercel.app"
+        if vercel_canonical not in origins:
+            origins.append(vercel_canonical)
+        return origins
 
     @property
     def smtp_enabled(self) -> bool:
