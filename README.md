@@ -1,6 +1,6 @@
 # StatusPing ⚡
 
-> Modern, open-source synthetic uptime monitoring and public status page platform — self-host with Docker or deploy to the cloud in minutes.
+> Modern, open-source synthetic uptime monitoring and public status page platform | self-host with Docker or deploy to the cloud in minutes.
 
 [![Backend CI](https://github.com/vishalmore90/statusping/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/vishalmore90/statusping/actions)
 [![Frontend CI](https://github.com/vishalmore90/statusping/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/vishalmore90/statusping/actions)
@@ -8,25 +8,44 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-blue.svg)](docker-compose.yml)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI%200.115-009688.svg)](https://fastapi.tiangolo.com)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black.svg)](https://nextjs.org)
+[![Live Demo](https://img.shields.io/badge/Production-Live%20Demo-10b981.svg)](https://statusping-rho.vercel.app)
+
+---
+
+## 🌐 Live Production Deployment
+
+StatusPing is fully deployed and publicly accessible in production:
+
+| Service | Platform | Live URL | Status |
+|---|---|---|---|
+| **Web Application** | Vercel | [https://statusping-rho.vercel.app](https://statusping-rho.vercel.app) | Online |
+| **Backend API** | Render | [https://statusping-7ozn.onrender.com](https://statusping-7ozn.onrender.com) | Online |
+| **API Health Check** | Render | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) | Online |
+| **Interactive API Docs** | Render | [https://statusping-7ozn.onrender.com/docs](https://statusping-7ozn.onrender.com/docs) | Online |
+| **Production Database** | Supabase | PostgreSQL 17 (Session Pooler) | Active |
+
+For complete deployment runbooks, zero-downtime procedures, and rollback documentation, refer to [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
 ## 🌟 What is StatusPing?
 
-StatusPing provides indie developers, SaaS founders, and engineering teams with enterprise-grade synthetic monitoring without recurring $29–$99/month fees. Configure HTTP and TCP health probes, track 90-day latency trends, manage incident response workflows, and publish beautiful public status pages with automatic 30-second edge cache revalidation.
+StatusPing provides indie developers, SaaS founders, and engineering teams with enterprise-grade synthetic monitoring without recurring $29 to $99/month fees. Configure HTTP and TCP health probes, track 90-day latency trends, manage incident response workflows, and publish beautiful public status pages with automatic 30-second edge cache revalidation.
 
 ---
 
 ## ✨ Features
 
-- 🔍 **Synthetic Probes**: HTTP(S) and TCP health checks with configurable intervals (30s–300s), response timeouts, and custom expected HTTP status codes.
+- 🔍 **Synthetic Probes**: HTTP(S) and TCP health checks with configurable intervals (30s to 300s), response timeouts, and custom expected HTTP status codes.
 - 📊 **90-Day Interactive Uptime Bars**: Daily uptime visualization with hover tooltips displaying calendar dates and exact uptime percentages.
 - 📈 **Latency Telemetry**: 50-check rolling response time charts with minimum, average, maximum, and p95 latency indicators.
 - 📣 **Automated Incident Management**: Multi-state incident timelines (`investigating` → `identified` → `monitoring` → `resolved`) with instant one-click resolution.
 - 📬 **Email Alerts**: Automatic downtime and recovery notifications via async SMTP (`aiosmtplib`).
 - 🌐 **Public Status Pages**: Server-Side Rendered (SSR) status pages at `/status/<slug>` featuring dynamic SEO metadata, 30s edge caching, and live background revalidation.
-- 🔐 **Multi-Tenant Security**: User isolation, bcrypt password hashing, and JWT bearer authentication.
-- 🐳 **Production Ready**: Multi-stage Dockerfiles, Docker Compose stack with PostgreSQL 16 health checks, and Railway/Vercel deployment configs.
+- 🛡️ **Hardened Security & Rate Limiting**: Production security headers (nosniff, DENY, XSS-Protection, HSTS, CSP), multi-tenant user isolation, bcrypt password hashing, JWT bearer tokens, and IP rate limiting on authentication routes (15 req/min login, 10 req/min register).
+- 📜 **Legal & Compliance Pages**: Built-in Privacy Policy (`/privacy`) and Terms of Service (`/terms`) pages.
+- 🎨 **Strict 2-Color Design System**: Clean, high-contrast Obsidian Charcoal (`#0a0d12`) and High-Tech Emerald (`#10b981`) UI layout aligned to an 8-column grid with zero pill buttons or purple gradients.
+- 🐳 **Production Ready**: Multi-stage Dockerfiles, Docker Compose stack with PostgreSQL 16 health checks, Render web service config, and Vercel edge deployment.
 
 ---
 
@@ -203,49 +222,55 @@ npm run build
 
 ## 📡 API Overview
 
-FastAPI provides automatic interactive Swagger documentation at `http://localhost:8000/docs`:
+FastAPI provides automatic interactive Swagger documentation at `https://statusping-7ozn.onrender.com/docs` (or locally at `http://localhost:8000/docs`):
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `GET` | `/health` | Container and database health check | No |
-| `POST` | `/api/v1/auth/register` | Register new account and receive JWT | No |
-| `POST` | `/api/v1/auth/login` | Authenticate with email/password | No |
-| `GET` | `/api/v1/auth/me` | Fetch authenticated user profile | Yes |
-| `GET` | `/api/v1/monitors` | List monitors owned by current user | Yes |
-| `POST` | `/api/v1/monitors` | Create new HTTP or TCP monitor | Yes |
-| `GET` | `/api/v1/monitors/{id}` | Fetch monitor details and configuration | Yes |
-| `PATCH` | `/api/v1/monitors/{id}` | Update monitor configuration / pause probe | Yes |
-| `DELETE` | `/api/v1/monitors/{id}` | Delete monitor and cascade check history | Yes |
-| `GET` | `/api/v1/monitors/{id}/checks` | Cursor-paginated check history & latency | Yes |
-| `GET` | `/api/v1/monitors/{id}/stats` | Uptime percentages (24h, 7d, 30d, 90d) | Yes |
-| `GET` | `/api/v1/incidents` | List user incidents with filters | Yes |
-| `POST` | `/api/v1/incidents` | Create new incident with initial update | Yes |
-| `POST` | `/api/v1/incidents/{id}/updates` | Post status update (`identified`, etc.) | Yes |
-| `POST` | `/api/v1/incidents/{id}/resolve` | One-click resolve incident | Yes |
-| `GET` | `/api/v1/public/status/{slug}` | Public status page payload (cached 30s) | No |
+| Method | Endpoint | Description | Auth Required | Rate Limit |
+|---|---|---|---|---|
+| `GET` | `/health` | Container and database health check | No | None |
+| `POST` | `/api/v1/auth/register` | Register new account and receive JWT | No | 10 req/min |
+| `POST` | `/api/v1/auth/login` | Authenticate with email/password | No | 15 req/min |
+| `GET` | `/api/v1/auth/me` | Fetch authenticated user profile | Yes | None |
+| `GET` | `/api/v1/monitors` | List monitors owned by current user | Yes | None |
+| `POST` | `/api/v1/monitors` | Create new HTTP or TCP monitor | Yes | None |
+| `GET` | `/api/v1/monitors/{id}` | Fetch monitor details and configuration | Yes | None |
+| `PATCH` | `/api/v1/monitors/{id}` | Update monitor configuration / pause probe | Yes | None |
+| `DELETE` | `/api/v1/monitors/{id}` | Delete monitor and cascade check history | Yes | None |
+| `GET` | `/api/v1/monitors/{id}/checks` | Cursor-paginated check history & latency | Yes | None |
+| `GET` | `/api/v1/monitors/{id}/stats` | Uptime percentages (24h, 7d, 30d, 90d) | Yes | None |
+| `GET` | `/api/v1/incidents` | List user incidents with filters | Yes | None |
+| `POST` | `/api/v1/incidents` | Create new incident with initial update | Yes | None |
+| `POST` | `/api/v1/incidents/{id}/updates` | Post status update (`identified`, etc.) | Yes | None |
+| `POST` | `/api/v1/incidents/{id}/resolve` | One-click resolve incident | Yes | None |
+| `GET` | `/api/v1/public/status/{slug}` | Public status page payload (cached 30s) | No | None |
 
 ---
 
 ## ☁️ Cloud Deployment
 
-### Backend on Railway
+StatusPing is production-ready for multi-cloud deployment:
 
-1. Create a new project in [Railway](https://railway.app).
-2. Provision a **PostgreSQL** database.
-3. Deploy the backend from the `backend/` folder using the included [`railway.json`](backend/railway.json) and [`Dockerfile`](backend/Dockerfile).
-4. Add environment variables in the Railway dashboard:
-   - `DATABASE_URL`: `${{Postgres.DATABASE_URL}}` (ensure `postgresql+asyncpg://` protocol prefix).
-   - `JWT_SECRET_KEY`: Generate a random 64-character secret.
-   - `ALLOWED_ORIGINS`: Set to your production Vercel frontend URL.
-5. Railway automatically runs `alembic upgrade head` on startup before launching Uvicorn.
+- **Frontend**: [Vercel](https://vercel.com) (Next.js 16 App Router on Global Edge Network)
+- **Backend**: [Render](https://render.com) (FastAPI Docker Web Service)
+- **Database**: [Supabase](https://supabase.com) (PostgreSQL 17 with IPv4 Session Pooler)
 
-### Frontend on Vercel
+For comprehensive setup steps, environment variable specifications, IPv4 session pooler configuration, and rollback procedures, see the [Production Deployment Guide](DEPLOYMENT.md).
 
-1. Import your GitHub repository into [Vercel](https://vercel.com).
-2. Set the **Root Directory** to `frontend`.
-3. Add the environment variable:
-   - `NEXT_PUBLIC_API_URL`: Your Railway backend production URL (e.g. `https://statusping-api.up.railway.app`).
-4. Deploy. Vercel automatically builds and optimizes the Next.js 16 application.
+### Quick Cloud Setup Summary
+
+1. **Database (Supabase)**:
+   - Create a project on Supabase.
+   - Obtain the connection string using the **Session Pooler** (Port 5432, IPv4 compatible).
+   - Format: `postgresql+asyncpg://postgres.<ref>:<password>@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres?ssl=require`
+
+2. **Backend (Render)**:
+   - Create a new **Web Service** on Render connected to this repository (`backend/` root).
+   - Environment variables: `DATABASE_URL`, `JWT_SECRET_KEY`, `APP_ENV=production`, `FRONTEND_URL`, `ALLOWED_ORIGINS`.
+   - Health check path: `/health`.
+
+3. **Frontend (Vercel)**:
+   - Import the repository on Vercel with **Root Directory** set to `frontend`.
+   - Environment variable: `NEXT_PUBLIC_API_URL=https://<your-render-backend-url>`.
+   - Deploy. Vercel automatically builds and optimizes the Next.js 16 application.
 
 ---
 
