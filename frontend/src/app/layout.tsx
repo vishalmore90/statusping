@@ -18,11 +18,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StatusPing — Uptime Monitoring & Public Status Pages",
+  title: "StatusPing | Uptime Monitoring & Public Status Pages",
   description:
     "Open-source uptime monitoring, SSL tracking, incident communication, and public status pages for modern engineering teams.",
   keywords: ["uptime monitoring", "status page", "health check", "synthetic monitoring", "incident management"],
   authors: [{ name: "StatusPing" }],
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

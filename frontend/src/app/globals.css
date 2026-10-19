@@ -5,73 +5,73 @@
    ========================================================================== */
 
 :root {
-  /* Color Palette - Dark Default */
-  --bg-base: #090a0f;
-  --bg-surface: #111420;
-  --bg-surface-elevated: #171b2b;
-  --bg-surface-hover: #1e2337;
-  --bg-glass: rgba(17, 20, 32, 0.75);
-  --bg-glass-subtle: rgba(255, 255, 255, 0.03);
+  /* Color Palette - Strict 2 Brand Colors: Obsidian (#0a0d12) & Precision Emerald (#10b981) */
+  --bg-base: #0a0d12;
+  --bg-surface: #12161f;
+  --bg-surface-elevated: #1a202c;
+  --bg-surface-hover: #222a3a;
+  --bg-glass: rgba(18, 22, 31, 0.90);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.04);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-hover: rgba(255, 255, 255, 0.22);
-  --border-focus: rgba(99, 102, 241, 0.6);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.28);
+  --border-focus: rgba(16, 185, 129, 0.6);
 
-  /* Typography Colors */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-dim: #475569;
-  --text-inverted: #090a0f;
+  /* Typography Colors - High Contrast, Legible, No Low-Contrast Gray */
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverted: #0a0d12;
 
-  /* Primary Brand (Electric Indigo to Violet) */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-active: #4338ca;
-  --primary-subtle: rgba(99, 102, 241, 0.15);
-  --primary-glow: rgba(99, 102, 241, 0.35);
-  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  /* Primary Brand (Precision Emerald - No Purple) */
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-active: #047857;
+  --primary-subtle: rgba(16, 185, 129, 0.12);
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
 
   /* Semantic Status Colors */
-  /* Up / Operational - Vivid Emerald */
+  /* Up / Operational */
   --status-up: #10b981;
   --status-up-subtle: rgba(16, 185, 129, 0.14);
   --status-up-glow: rgba(16, 185, 129, 0.35);
   --status-up-text: #34d399;
 
-  /* Degraded / Warning - Vivid Amber */
+  /* Degraded / Warning */
   --status-degraded: #f59e0b;
   --status-degraded-subtle: rgba(245, 158, 11, 0.14);
   --status-degraded-glow: rgba(245, 158, 11, 0.35);
   --status-degraded-text: #fbbf24;
 
-  /* Down / Outage / Critical - Crisp Rose Crimson */
+  /* Down / Outage / Critical */
   --status-down: #ef4444;
   --status-down-subtle: rgba(239, 68, 68, 0.14);
   --status-down-glow: rgba(239, 68, 68, 0.35);
   --status-down-text: #f87171;
 
-  /* Unknown / Paused - Neutral Slate */
+  /* Unknown / Paused */
   --status-unknown: #64748b;
   --status-unknown-subtle: rgba(100, 116, 139, 0.14);
-  --status-unknown-text: #94a3b8;
+  --status-unknown-text: #cbd5e1;
 
   /* Elevation & Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 4px 10px -2px rgba(0, 0, 0, 0.5);
-  --shadow-glow-primary: 0 0 25px -3px rgba(99, 102, 241, 0.45);
+  --shadow-glow-primary: 0 0 20px -3px rgba(16, 185, 129, 0.35);
   --shadow-glow-up: 0 0 20px -3px rgba(16, 185, 129, 0.4);
   --shadow-glow-down: 0 0 20px -3px rgba(239, 68, 68, 0.4);
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  /* Radius - Clean modern architectural radii (No Pill Shapes) */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 6px;
 
   /* Spacing Scale */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

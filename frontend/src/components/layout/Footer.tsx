@@ -8,7 +8,7 @@ export function Footer() {
       style={{
         borderTop: "1px solid var(--border-subtle)",
         backgroundColor: "var(--bg-surface)",
-        padding: "2.5rem 0 2rem",
+        padding: "3.5rem 0 2.5rem",
         marginTop: "auto",
       }}
     >
@@ -17,7 +17,7 @@ export function Footer() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "2rem",
+          gap: "2.5rem",
         }}
       >
         <div
@@ -26,7 +26,7 @@ export function Footer() {
             flexWrap: "wrap",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: "1.5rem",
+            gap: "2rem",
           }}
         >
           {/* Logo & description */}
@@ -37,20 +37,20 @@ export function Footer() {
                   width: "24px",
                   height: "24px",
                   borderRadius: "var(--radius-sm)",
-                  background: "var(--primary-gradient)",
+                  backgroundColor: "var(--primary)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Activity size={14} color="#ffffff" />
+                <Activity size={14} color="#0a0d12" strokeWidth={2.5} />
               </div>
               <span style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-primary)" }}>
                 StatusPing
               </span>
             </div>
-            <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", maxWidth: "340px" }}>
-              High-frequency synthetic monitoring and public incident status pages designed for engineering reliability.
+            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", maxWidth: "340px" }}>
+              Open-source synthetic monitoring and incident communication for engineering reliability.
             </p>
           </div>
 
@@ -59,25 +59,26 @@ export function Footer() {
             style={{
               display: "flex",
               alignItems: "center",
+              flexWrap: "wrap",
               gap: "2rem",
               fontSize: "0.875rem",
               color: "var(--text-secondary)",
             }}
           >
-            <Link href="/dashboard" style={{ transition: "color var(--transition-fast)" }}>
+            <Link href="/privacy" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
+              Privacy Policy
+            </Link>
+            <Link href="/terms" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
+              Terms of Service
+            </Link>
+            <Link href="/dashboard" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
               Dashboard
             </Link>
-            <Link href="/dashboard/monitors" style={{ transition: "color var(--transition-fast)" }}>
-              Monitors
-            </Link>
-            <Link href="/dashboard/incidents" style={{ transition: "color var(--transition-fast)" }}>
-              Incidents
-            </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/vishalmore90/statusping"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ transition: "color var(--transition-fast)" }}
+              style={{ color: "var(--text-secondary)", textDecoration: "none" }}
             >
               GitHub
             </a>
@@ -87,21 +88,21 @@ export function Footer() {
         {/* Bottom bar */}
         <div
           style={{
-            paddingTop: "1.5rem",
+            paddingTop: "1.75rem",
             borderTop: "1px solid var(--border-subtle)",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
             alignItems: "center",
             gap: "1rem",
-            fontSize: "0.75rem",
-            color: "var(--text-muted)",
+            fontSize: "0.8125rem",
+            color: "var(--text-secondary)",
           }}
         >
           <div>&copy; 2026 StatusPing. Released under MIT License.</div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <ShieldCheck size={14} color="var(--status-up)" />
-            <span>All systems nominal</span>
+            <ShieldCheck size={15} color="var(--status-up)" />
+            <span>Infrastructure Verified</span>
           </div>
         </div>
       </div>

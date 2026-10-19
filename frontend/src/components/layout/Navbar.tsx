@@ -15,7 +15,7 @@ export function Navbar() {
   const isPublicStatusPage = pathname.startsWith("/status/");
 
   if (isPublicStatusPage) {
-    return null; // Public status pages use their own specialized header
+    return null;
   }
 
   return (
@@ -41,7 +41,7 @@ export function Navbar() {
         }}
       >
         {/* Brand / Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
           <Link
             href={user ? "/dashboard" : "/"}
             style={{
@@ -52,27 +52,65 @@ export function Navbar() {
               fontSize: "1.125rem",
               letterSpacing: "-0.02em",
               color: "var(--text-primary)",
+              textDecoration: "none",
             }}
           >
             <div
               style={{
                 width: "32px",
                 height: "32px",
-                borderRadius: "var(--radius-md)",
-                background: "var(--primary-gradient)",
+                borderRadius: "var(--radius-sm)",
+                backgroundColor: "var(--primary)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "var(--shadow-glow-primary)",
               }}
             >
-              <Activity size={18} color="#ffffff" />
+              <Activity size={18} color="#0a0d12" strokeWidth={2.5} />
             </div>
             <span>Status<span style={{ color: "var(--primary)" }}>Ping</span></span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          {user && !isAuthPage && (
+          {/* Navigation Links - Max 5 links total rule */}
+          {!user && !isAuthPage ? (
+            <nav style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+              <Link
+                href="/#features"
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "var(--text-secondary)",
+                  textDecoration: "none",
+                }}
+              >
+                Features
+              </Link>
+              <Link
+                href="/#about"
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "var(--text-secondary)",
+                  textDecoration: "none",
+                }}
+              >
+                About
+              </Link>
+              <a
+                href="https://statusping-7ozn.onrender.com/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "var(--text-secondary)",
+                  textDecoration: "none",
+                }}
+              >
+                Docs
+              </a>
+            </nav>
+          ) : user && !isAuthPage ? (
             <nav style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <Link
                 href="/dashboard"
@@ -83,7 +121,7 @@ export function Navbar() {
                   borderRadius: "var(--radius-md)",
                   color: pathname === "/dashboard" ? "var(--text-primary)" : "var(--text-secondary)",
                   backgroundColor: pathname === "/dashboard" ? "var(--bg-surface-elevated)" : "transparent",
-                  transition: "all var(--transition-fast)",
+                  textDecoration: "none",
                 }}
               >
                 Overview
@@ -97,7 +135,7 @@ export function Navbar() {
                   borderRadius: "var(--radius-md)",
                   color: pathname.startsWith("/dashboard/monitors") ? "var(--text-primary)" : "var(--text-secondary)",
                   backgroundColor: pathname.startsWith("/dashboard/monitors") ? "var(--bg-surface-elevated)" : "transparent",
-                  transition: "all var(--transition-fast)",
+                  textDecoration: "none",
                 }}
               >
                 Monitors
@@ -111,16 +149,16 @@ export function Navbar() {
                   borderRadius: "var(--radius-md)",
                   color: pathname.startsWith("/dashboard/incidents") ? "var(--text-primary)" : "var(--text-secondary)",
                   backgroundColor: pathname.startsWith("/dashboard/incidents") ? "var(--bg-surface-elevated)" : "transparent",
-                  transition: "all var(--transition-fast)",
+                  textDecoration: "none",
                 }}
               >
                 Incidents
               </Link>
             </nav>
-          )}
+          ) : null}
         </div>
 
-        {/* Right CTA / User State */}
+        {/* Right Action Area */}
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {user ? (
             <>
@@ -151,7 +189,7 @@ export function Navbar() {
                     style={{
                       width: "28px",
                       height: "28px",
-                      borderRadius: "var(--radius-full)",
+                      borderRadius: "var(--radius-sm)",
                       backgroundColor: "var(--bg-surface-elevated)",
                       display: "flex",
                       alignItems: "center",
@@ -161,7 +199,7 @@ export function Navbar() {
                   >
                     <UserIcon size={14} />
                   </div>
-                  <span style={{ fontWeight: 500 }}>{user.name}</span>
+                  <span style={{ fontWeight: 500, color: "var(--text-primary)" }}>{user.name}</span>
                 </div>
                 <Button
                   size="sm"
@@ -175,18 +213,18 @@ export function Navbar() {
               </div>
             </>
           ) : !isAuthPage ? (
-            <>
-              <Link href="/login">
-                <Button size="sm" variant="ghost">
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <Link href="/login" style={{ textDecoration: "none" }}>
+                <Button size="sm" variant="secondary">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/register">
+              <Link href="/register" style={{ textDecoration: "none" }}>
                 <Button size="sm" variant="primary">
                   Get Started
                 </Button>
               </Link>
-            </>
+            </div>
           ) : null}
         </div>
       </div>

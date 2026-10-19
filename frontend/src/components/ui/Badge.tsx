@@ -134,7 +134,7 @@ export function Badge({
     fontSize: size === "sm" ? "0.75rem" : "0.8125rem",
     fontWeight: 500,
     lineHeight: 1.2,
-    borderRadius: "var(--radius-full)",
+    borderRadius: "var(--radius-sm)",
     backgroundColor: config.bg,
     color: config.color,
     border: `1px solid ${config.border}`,
