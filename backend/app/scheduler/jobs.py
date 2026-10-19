@@ -13,7 +13,7 @@ import asyncio
 import logging
 from typing import Any
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import select
@@ -23,16 +23,8 @@ from app.models.monitor import Monitor
 
 log = logging.getLogger(__name__)
 
-# Module-level scheduler singleton
-_scheduler = BackgroundScheduler(timezone="UTC")
-
-
-# ── Internal helper ───────────────────────────────────────────────────────────
-
-
-def _run_async(fn: Any, *args: Any) -> None:
-    """Run an async function from a sync scheduler context."""
-    asyncio.run(fn(*args))
+# Module-level scheduler singleton (runs natively on FastAPI's asyncio event loop)
+_scheduler = AsyncIOScheduler(timezone="UTC")
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -51,11 +43,11 @@ def add_monitor_job(monitor: Monitor) -> None:
         _scheduler.remove_job(job_id)
 
     _scheduler.add_job(
-        _run_async,
+        run_check,
         trigger=IntervalTrigger(seconds=monitor.interval_seconds),
         id=job_id,
         name=f"check:{monitor.name}",
-        args=[run_check, str(monitor.id)],
+        args=[str(monitor.id)],
         replace_existing=True,
         misfire_grace_time=30,
     )
@@ -107,22 +99,21 @@ async def start_scheduler() -> None:
     for monitor in monitors:
         job_id = str(monitor.id)
         _scheduler.add_job(
-            _run_async,
+            run_check,
             trigger=IntervalTrigger(seconds=monitor.interval_seconds),
             id=job_id,
             name=f"check:{monitor.name}",
-            args=[run_check, str(monitor.id)],
+            args=[str(monitor.id)],
             replace_existing=True,
             misfire_grace_time=30,
         )
 
     # Daily retention job at 02:00 UTC
     _scheduler.add_job(
-        _run_async,
+        delete_old_check_results,
         trigger=CronTrigger(hour=2, minute=0, timezone="UTC"),
         id="retention_job",
         name="Delete check_results older than 90 days",
-        args=[delete_old_check_results],
         replace_existing=True,
     )
 
