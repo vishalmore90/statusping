@@ -1,10 +1,10 @@
-# StatusPing ⚡
+# StatusPing
 
-> Modern, open-source synthetic uptime monitoring and public status page platform | self-host with Docker or deploy to the cloud in minutes.
+High-performance, open-source synthetic uptime monitoring and public status page platform. Self-host with Docker Compose or deploy across modern cloud infrastructure.
 
 [![Backend CI](https://github.com/vishalmore90/statusping/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/vishalmore90/statusping/actions)
 [![Frontend CI](https://github.com/vishalmore90/statusping/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/vishalmore90/statusping/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-10b981.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-blue.svg)](docker-compose.yml)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI%200.115-009688.svg)](https://fastapi.tiangolo.com)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black.svg)](https://nextjs.org)
@@ -12,188 +12,228 @@
 
 ---
 
-## 🌐 Live Production Deployment
+## Table of Contents
 
-StatusPing is fully deployed and publicly accessible in production:
+- [Overview](#overview)
+- [Live Production Deployment](#live-production-deployment)
+- [Core Capabilities](#core-capabilities)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Quickstart with Docker Compose](#quickstart-with-docker-compose)
+- [Local Development Setup](#local-development-setup)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+- [Environment Configuration](#environment-configuration)
+- [API Reference](#api-reference)
+- [Security and Hardening](#security-and-hardening)
+- [Testing and Quality Assurance](#testing-and-quality-assurance)
+- [Production Deployment](#production-deployment)
+- [Author and License](#author-and-license)
 
-| Service | Platform | Live URL | Status |
+---
+
+## Overview
+
+StatusPing delivers enterprise-grade synthetic health monitoring and public incident communication without recurring third-party SaaS fees. It enables engineering teams to execute high-frequency HTTP and TCP probes, track 90-day daily uptime history, visualize latency telemetry, orchestrate incident lifecycles, and publish server-rendered public status pages with automatic edge revalidation.
+
+---
+
+## Live Production Deployment
+
+StatusPing is continuously deployed across production cloud infrastructure:
+
+| Service | Provider | Production URL | Status |
 |---|---|---|---|
-| **Web Application** | Vercel | [https://statusping-rho.vercel.app](https://statusping-rho.vercel.app) | Online |
-| **Backend API** | Render | [https://statusping-7ozn.onrender.com](https://statusping-7ozn.onrender.com) | Online |
-| **API Health Check** | Render | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) | Online |
-| **Interactive API Docs** | Render | [https://statusping-7ozn.onrender.com/docs](https://statusping-7ozn.onrender.com/docs) | Online |
-| **Production Database** | Supabase | PostgreSQL 17 (Session Pooler) | Active |
+| Frontend Web App | Vercel | [https://statusping-rho.vercel.app](https://statusping-rho.vercel.app) | Operational |
+| Backend REST API | Render | [https://statusping-7ozn.onrender.com](https://statusping-7ozn.onrender.com) | Operational |
+| Health Check | Render | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) | Operational |
+| Interactive API Docs | Render | [https://statusping-7ozn.onrender.com/docs](https://statusping-7ozn.onrender.com/docs) | Operational |
+| Primary Database | Supabase | PostgreSQL 17 (Session Pooler Port 5432) | Operational |
 
-For complete deployment runbooks, zero-downtime procedures, and rollback documentation, refer to [DEPLOYMENT.md](DEPLOYMENT.md).
-
----
-
-## 🌟 What is StatusPing?
-
-StatusPing provides indie developers, SaaS founders, and engineering teams with enterprise-grade synthetic monitoring without recurring $29 to $99/month fees. Configure HTTP and TCP health probes, track 90-day latency trends, manage incident response workflows, and publish beautiful public status pages with automatic 30-second edge cache revalidation.
+For infrastructure runbooks, DNS configuration, and zero-downtime rollback procedures, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
-## ✨ Features
+## Core Capabilities
 
-- 🔍 **Synthetic Probes**: HTTP(S) and TCP health checks with configurable intervals (30s to 300s), response timeouts, and custom expected HTTP status codes.
-- 📊 **90-Day Interactive Uptime Bars**: Daily uptime visualization with hover tooltips displaying calendar dates and exact uptime percentages.
-- 📈 **Latency Telemetry**: 50-check rolling response time charts with minimum, average, maximum, and p95 latency indicators.
-- 📣 **Automated Incident Management**: Multi-state incident timelines (`investigating` → `identified` → `monitoring` → `resolved`) with instant one-click resolution.
-- 📬 **Email Alerts**: Automatic downtime and recovery notifications via async SMTP (`aiosmtplib`).
-- 🌐 **Public Status Pages**: Server-Side Rendered (SSR) status pages at `/status/<slug>` featuring dynamic SEO metadata, 30s edge caching, and live background revalidation.
-- 🛡️ **Hardened Security & Rate Limiting**: Production security headers (nosniff, DENY, XSS-Protection, HSTS, CSP), multi-tenant user isolation, bcrypt password hashing, JWT bearer tokens, and IP rate limiting on authentication routes (15 req/min login, 10 req/min register).
-- 📜 **Legal & Compliance Pages**: Built-in Privacy Policy (`/privacy`) and Terms of Service (`/terms`) pages.
-- 🎨 **Strict 2-Color Design System**: Clean, high-contrast Obsidian Charcoal (`#0a0d12`) and High-Tech Emerald (`#10b981`) UI layout aligned to an 8-column grid with zero pill buttons or purple gradients.
-- 🐳 **Production Ready**: Multi-stage Dockerfiles, Docker Compose stack with PostgreSQL 16 health checks, Render web service config, and Vercel edge deployment.
+- **Synthetic Probes**: HTTP(S) and TCP health checks with configurable cadence (30s to 300s), custom timeout thresholds, and HTTP status code assertions.
+- **90-Day Uptime Telemetry**: Interactive daily uptime bars with precise calendar date tooltips, historical SLA calculations, and responsive mobile flex-scaling.
+- **Latency Analytics**: 50-probe rolling telemetry visualization with min, average, max, and p95 latency indicators.
+- **Incident State Machine**: Automated incident creation on downtime with structured progress lifecycles (`investigating` -> `identified` -> `monitoring` -> `resolved`) and one-click resolution.
+- **Asynchronous Alerting**: Background email notifications dispatched via async SMTP (`aiosmtplib`) on downtime and service recovery.
+- **Public Status Pages**: Server-Side Rendered (SSR) status pages at `/status/<slug>` with dynamic OpenGraph metadata, 30-second edge cache revalidation, and live background polling.
+- **Hardened Authentication**: Multi-tenant data isolation, bcrypt password hashing, JWT bearer tokens, and IP-based rate limiting on authentication routes (15 req/min login, 10 req/min register).
+- **Responsive Interface**: Obsidian Charcoal (`#0a0d12`) and High-Tech Emerald (`#10b981`) aesthetic, mobile navigation drawer, and strict grid alignment with zero purple gradients or pill buttons.
 
 ---
 
-## 🏗️ Architecture
+## System Architecture
 
 ```
-                  ┌────────────────────────────────────────┐
-                  │          End Users & Browsers          │
-                  └───────────────────┬────────────────────┘
-                                      │
-            ┌─────────────────────────┴─────────────────────────┐
-            │                                                   │
-            ▼                                                   ▼
-┌───────────────────────┐                           ┌───────────────────────┐
-│  Public Status Page   │                           │ Management Dashboard  │
-│  (/status/<slug>)     │                           │ (/dashboard/*)        │
-│  Next.js 16 (SSR)     │                           │ Next.js 16 (React 19) │
-└───────────┬───────────┘                           └───────────┬───────────┘
-            │                                                   │
-            │   HTTP (Internal / External API Requests)         │
-            └─────────────────────────┬─────────────────────────┘
-                                      │
-                                      ▼
-                        ┌───────────────────────────┐
-                        │     FastAPI Backend       │
-                        │     (Port 8000)           │
-                        └─────────────┬─────────────┘
-                                      │
-        ┌─────────────────────────────┼─────────────────────────────┐
-        ▼                             ▼                             ▼
-┌──────────────────┐        ┌──────────────────┐        ┌──────────────────┐
-│   Auth & JWT     │        │   APScheduler    │        │  Incidents &     │
-│   Service        │        │   Async Engine   │        │  Notifications   │
-└────────┬─────────┘        └────────┬─────────┘        └────────┬─────────┘
-         │                           │                           │
-         │                           ▼                           │
-         │                 ┌───────────────────┐                 │
-         │                 │ Synthetic Probes  │                 │
-         │                 │ (HTTP / TCP)      │                 │
-         │                 └───────────────────┘                 │
-         │                                                       │
-         └───────────────────────────┬───────────────────────────┘
-                                     │
-                                     ▼
-                        ┌───────────────────────────┐
-                        │       PostgreSQL 16       │
-                        │    (SQLAlchemy + asyncpg) │
-                        └───────────────────────────┘
+                  +----------------------------------------+
+                  |         Client Web Browsers            |
+                  +-------------------+--------------------+
+                                      |
+            +-------------------------+-------------------------+
+            | (HTTPS)                                           | (HTTPS / CORS)
+            v                                                   v
++───────────────────────+                           +───────────────────────+
+|  Public Status Pages  |                           | Management Dashboard  |
+|  (/status/<slug>)     |                           | (/dashboard/*)        |
+|  Next.js 16 (SSR)     |                           | Next.js 16 (React 19) |
++───────────+───────────+                           +───────────+───────────+
+            |                                                   |
+            +-------------------------+-------------------------+
+                                      |
+                                      v
+                        +───────────────────────────+
+                        |      FastAPI Backend      |
+                        |      (Render / Port 8000) |
+                        +─────────────+─────────────+
+                                      |
+        +─────────────────────────────+─────────────────────────────+
+        |                             |                             |
+        v                             v                             v
++──────────────────+        +──────────────────+        +──────────────────+
+|  JWT Auth & User |        |   APScheduler    |        |   Incidents &    |
+|  Rate Limiting   |        |   Async Engine   |        |   Notifications  |
++────────┬─────────+        +────────┬─────────+        +────────┬─────────+
+         |                           |                           |
+         |                           v                           |
+         |                 +───────────────────+                 |
+         |                 | Synthetic Probes  |                 |
+         |                 | (HTTP / TCP)      |                 |
+         |                 +───────────────────+                 |
+         |                                                       |
+         +───────────────────────────+───────────────────────────+
+                                     |
+                                     | (postgresql+asyncpg://)
+                                     | (Session Pooler Port 5432)
+                                     v
+                        +───────────────────────────+
+                        |       PostgreSQL 17       |
+                        |    (Supabase / Local 16)  |
+                        +───────────────────────────+
 ```
 
 ---
 
-## 🚀 Quickstart with Docker Compose
+## Technology Stack
 
-Run the entire production stack (PostgreSQL + FastAPI Backend + Next.js Frontend) with a single command:
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python 3.11+, FastAPI 0.115, Pydantic v2, SQLAlchemy 2.0 (Async), Asyncpg, Alembic, APScheduler 3.10 |
+| **Frontend** | Next.js 16 (Turbopack, App Router), React 19, TypeScript 5, Lucide Icons, Recharts |
+| **Database** | PostgreSQL 17 (Supabase Session Pooler) / PostgreSQL 16 Alpine (Docker) |
+| **Security** | HTTP Security Headers, Passlib (Bcrypt), Python-Jose (JWT), In-Memory Rate Limiting |
+| **Alerting** | Async SMTP (`aiosmtplib`), HTML notification templates |
+| **Testing** | Pytest, Pytest-Asyncio, Pytest-Cov, Ruff, Mypy, ESLint, TypeScript Compiler |
+| **Infrastructure**| Docker, Docker Compose, Vercel Edge Network, Render Web Services |
+
+---
+
+## Quickstart with Docker Compose
+
+Run the entire production stack (PostgreSQL + FastAPI Backend + Next.js Frontend) locally with Docker Compose:
 
 ```bash
 # Clone the repository
 git clone https://github.com/vishalmore90/statusping.git
 cd statusping
 
-# Launch with Docker Compose
+# Build and start all services in detached mode
 docker compose up -d --build
 ```
 
-Access the services:
-- **Web Application & Dashboard**: [http://localhost:3000](http://localhost:3000)
-- **Demo Public Status Page**: [http://localhost:3000/status/demo](http://localhost:3000/status/demo)
-- **FastAPI Interactive API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Backend Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+Verify service endpoints:
 
-To view live container logs:
+- **Frontend Application**: [http://localhost:3000](http://localhost:3000)
+- **Demo Status Page**: [http://localhost:3000/status/demo](http://localhost:3000/status/demo)
+- **FastAPI Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+
+View container logs:
 ```bash
 docker compose logs -f
 ```
 
-To stop all services:
+Stop and remove containers:
 ```bash
 docker compose down
 ```
 
 ---
 
-## 💻 Manual Local Development
+## Local Development Setup
 
-### 1. Prerequisites
+### Prerequisites
 
-- Python 3.11+
-- Node.js 20+
-- PostgreSQL 15+ running locally (or via Docker: `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=statusping postgres:16-alpine`)
+- **Python**: Version 3.11 or higher
+- **Node.js**: Version 20 LTS or higher
+- **PostgreSQL**: Version 15 or higher (or run via Docker)
 
 ---
 
-### 2. Backend Setup
+### Backend Setup
 
+1. Navigate to the backend directory and initialize a virtual environment:
 ```bash
 cd backend
-
-# Create and activate virtual environment
 python -m venv .venv
-source .venv/bin/activate       # On Linux/macOS
-# or: .venv\Scripts\activate    # On Windows
+source .venv/bin/activate       # Linux / macOS
+# or: .venv\Scripts\activate    # Windows
+```
 
-# Install package with development dependencies
+2. Install dependencies with development tools:
+```bash
 pip install -e ".[dev]"
+```
 
-# Configure environment variables
+3. Configure local environment variables:
+```bash
 cp .env.example .env
+```
 
-# Run database migrations
+4. Apply database migrations:
+```bash
 alembic upgrade head
+```
 
-# Start FastAPI development server
+5. Launch the FastAPI server:
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-Run backend tests:
-```bash
-pytest -v
-```
-
 ---
 
-### 3. Frontend Setup
+### Frontend Setup
 
+1. Navigate to the frontend directory:
 ```bash
 cd frontend
+```
 
-# Install dependencies
+2. Install dependencies:
+```bash
 npm install
+```
 
-# Configure environment variables
+3. Configure local environment variables:
+```bash
 cp .env.local.example .env.local
+```
 
-# Start Next.js development server
+4. Launch the Next.js development server:
+```bash
 npm run dev
 ```
 
-Run frontend linting & production build validation:
-```bash
-npx tsc --noEmit
-npm run lint
-npm run build
-```
+The application will be accessible at [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Configuration
 
 ### Backend (`backend/.env`)
 
@@ -201,88 +241,91 @@ npm run build
 |---|---|---|
 | `DATABASE_URL` | Async PostgreSQL connection string | `postgresql+asyncpg://postgres:postgres@localhost:5432/statusping` |
 | `JWT_SECRET_KEY` | Secret key used for signing JWT tokens | `change-me-in-production` |
-| `JWT_ALGORITHM` | Algorithm for JWT encoding | `HS256` |
-| `JWT_EXPIRE_HOURS` | Access token lifespan in hours | `24` |
+| `JWT_ALGORITHM` | JWT signing algorithm | `HS256` |
+| `JWT_EXPIRE_HOURS` | Token expiration lifespan | `24` |
 | `ALLOWED_ORIGINS` | Comma-separated CORS allowed origins | `http://localhost:3000` |
-| `FRONTEND_URL` | URL used in alert emails | `http://localhost:3000` |
-| `SMTP_HOST` | SMTP server host for email alerts | `smtp.gmail.com` |
-| `SMTP_PORT` | SMTP port | `587` |
+| `FRONTEND_URL` | Base application URL for email links | `http://localhost:3000` |
+| `APP_ENV` | Runtime environment (`development`, `production`, `test`) | `development` |
+| `SMTP_HOST` | Outgoing SMTP server address | `smtp.gmail.com` |
+| `SMTP_PORT` | Outgoing SMTP port | `587` |
 | `SMTP_USERNAME` | SMTP authentication username | *(empty)* |
 | `SMTP_PASSWORD` | SMTP authentication password | *(empty)* |
-| `EMAIL_FROM` | Sender address for alert emails | `noreply@statusping.dev` |
+| `EMAIL_FROM` | Outgoing sender email address | `noreply@statusping.dev` |
 
 ### Frontend (`frontend/.env.local`)
 
 | Variable | Description | Default |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | API endpoint accessed by the browser | `http://localhost:8000` |
-| `INTERNAL_API_URL` | Internal backend endpoint for SSR (Docker) | `http://backend:8000` |
+| `NEXT_PUBLIC_API_URL` | Browser-accessible backend API endpoint | `http://localhost:8000` |
+| `INTERNAL_API_URL` | Internal backend endpoint for Docker SSR | `http://backend:8000` |
 
 ---
 
-## 📡 API Overview
+## API Reference
 
-FastAPI provides automatic interactive Swagger documentation at `https://statusping-7ozn.onrender.com/docs` (or locally at `http://localhost:8000/docs`):
+Interactive OpenAPI documentation is available at `/docs` on the backend host:
 
 | Method | Endpoint | Description | Auth Required | Rate Limit |
 |---|---|---|---|---|
-| `GET` | `/health` | Container and database health check | No | None |
-| `POST` | `/api/v1/auth/register` | Register new account and receive JWT | No | 10 req/min |
-| `POST` | `/api/v1/auth/login` | Authenticate with email/password | No | 15 req/min |
-| `GET` | `/api/v1/auth/me` | Fetch authenticated user profile | Yes | None |
-| `GET` | `/api/v1/monitors` | List monitors owned by current user | Yes | None |
-| `POST` | `/api/v1/monitors` | Create new HTTP or TCP monitor | Yes | None |
-| `GET` | `/api/v1/monitors/{id}` | Fetch monitor details and configuration | Yes | None |
-| `PATCH` | `/api/v1/monitors/{id}` | Update monitor configuration / pause probe | Yes | None |
+| `GET` | `/health` | Service and database health check | No | None |
+| `POST` | `/api/v1/auth/register` | Create account and issue JWT token | No | 10 req/min |
+| `POST` | `/api/v1/auth/login` | Authenticate credentials and issue JWT | No | 15 req/min |
+| `GET` | `/api/v1/auth/me` | Fetch profile for current authenticated user | Yes | None |
+| `GET` | `/api/v1/monitors` | List monitors owned by user | Yes | None |
+| `POST` | `/api/v1/monitors` | Create a new HTTP or TCP synthetic monitor | Yes | None |
+| `GET` | `/api/v1/monitors/{id}` | Retrieve monitor details and settings | Yes | None |
+| `PATCH` | `/api/v1/monitors/{id}` | Update monitor configuration or pause probe | Yes | None |
 | `DELETE` | `/api/v1/monitors/{id}` | Delete monitor and cascade check history | Yes | None |
-| `GET` | `/api/v1/monitors/{id}/checks` | Cursor-paginated check history & latency | Yes | None |
-| `GET` | `/api/v1/monitors/{id}/stats` | Uptime percentages (24h, 7d, 30d, 90d) | Yes | None |
-| `GET` | `/api/v1/incidents` | List user incidents with filters | Yes | None |
-| `POST` | `/api/v1/incidents` | Create new incident with initial update | Yes | None |
-| `POST` | `/api/v1/incidents/{id}/updates` | Post status update (`identified`, etc.) | Yes | None |
-| `POST` | `/api/v1/incidents/{id}/resolve` | One-click resolve incident | Yes | None |
+| `GET` | `/api/v1/monitors/{id}/checks` | Cursor-paginated probe check history | Yes | None |
+| `GET` | `/api/v1/monitors/{id}/stats` | Aggregate uptime percentages (24h, 7d, 30d, 90d) | Yes | None |
+| `GET` | `/api/v1/incidents` | List user incidents with status filters | Yes | None |
+| `POST` | `/api/v1/incidents` | Create a new manual incident | Yes | None |
+| `POST` | `/api/v1/incidents/{id}/updates` | Post an incident update note | Yes | None |
+| `POST` | `/api/v1/incidents/{id}/resolve` | One-click resolve an active incident | Yes | None |
+| `GET` | `/api/v1/status-pages` | List user public status pages | Yes | None |
+| `POST` | `/api/v1/status-pages` | Create or configure a public status page | Yes | None |
 | `GET` | `/api/v1/public/status/{slug}` | Public status page payload (cached 30s) | No | None |
 
 ---
 
-## ☁️ Cloud Deployment
+## Security and Hardening
 
-StatusPing is production-ready for multi-cloud deployment:
-
-- **Frontend**: [Vercel](https://vercel.com) (Next.js 16 App Router on Global Edge Network)
-- **Backend**: [Render](https://render.com) (FastAPI Docker Web Service)
-- **Database**: [Supabase](https://supabase.com) (PostgreSQL 17 with IPv4 Session Pooler)
-
-For comprehensive setup steps, environment variable specifications, IPv4 session pooler configuration, and rollback procedures, see the [Production Deployment Guide](DEPLOYMENT.md).
-
-### Quick Cloud Setup Summary
-
-1. **Database (Supabase)**:
-   - Create a project on Supabase.
-   - Obtain the connection string using the **Session Pooler** (Port 5432, IPv4 compatible).
-   - Format: `postgresql+asyncpg://postgres.<ref>:<password>@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres?ssl=require`
-
-2. **Backend (Render)**:
-   - Create a new **Web Service** on Render connected to this repository (`backend/` root).
-   - Environment variables: `DATABASE_URL`, `JWT_SECRET_KEY`, `APP_ENV=production`, `FRONTEND_URL`, `ALLOWED_ORIGINS`.
-   - Health check path: `/health`.
-
-3. **Frontend (Vercel)**:
-   - Import the repository on Vercel with **Root Directory** set to `frontend`.
-   - Environment variable: `NEXT_PUBLIC_API_URL=https://<your-render-backend-url>`.
-   - Deploy. Vercel automatically builds and optimizes the Next.js 16 application.
+- **HTTP Security Headers**: Enforced via FastAPI middleware:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `X-XSS-Protection: 1; mode=block`
+  - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+- **Rate Limiting**: In-memory IP-based sliding window middleware on `/api/v1/auth/login` (15 requests/minute) and `/api/v1/auth/register` (10 requests/minute) returning HTTP 429 with `Retry-After: 60`.
+- **Tenant Isolation**: All database queries enforce user ownership checks on monitors, incidents, and status pages.
+- **Credential Storage**: Passwords hashed with bcrypt; JWT signatures validated using HMAC-SHA256.
 
 ---
 
-## 🧪 Testing
+## Testing and Quality Assurance
 
 ### Backend Test Suite
+
+Run unit and integration tests with coverage reporting:
+
 ```bash
 cd backend
 pytest -v --cov=app --cov-report=term-missing
 ```
 
-### Frontend Typecheck & Build
+Run code formatting and static type checks:
+
+```bash
+cd backend
+ruff check .
+ruff format --check .
+mypy app
+```
+
+### Frontend Validation
+
+Validate TypeScript types, ESLint rules, and Turbopack production builds:
+
 ```bash
 cd frontend
 npx tsc --noEmit
@@ -292,6 +335,19 @@ npm run build
 
 ---
 
-## 📄 License
+## Production Deployment
 
-This project is open-source software licensed under the [MIT License](LICENSE).
+StatusPing is architected for zero-downtime multi-cloud deployment:
+
+- **Frontend**: Deployed to [Vercel](https://vercel.com) using Next.js 16 on the Global Edge Network.
+- **Backend**: Deployed to [Render](https://render.com) as a containerized web service with automated Alembic migrations on boot.
+- **Database**: Hosted on [Supabase](https://supabase.com) using PostgreSQL 17 accessed via IPv4 Session Pooler (`port 5432`).
+
+For complete configuration steps, environment mappings, and operational runbooks, refer to [DEPLOYMENT.md](DEPLOYMENT.md).
+
+---
+
+## Author and License
+
+- **Author**: [Vishal More](https://github.com/vishalmore90)
+- **License**: Released under the [MIT License](LICENSE).
