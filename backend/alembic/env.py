@@ -15,8 +15,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Override URL dynamically from DATABASE_URL env var or app settings
-db_url = os.getenv("DATABASE_URL", settings.database_url)
+# Override URL dynamically from settings (which normalizes postgresql+asyncpg://)
+db_url = settings.database_url
 config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
