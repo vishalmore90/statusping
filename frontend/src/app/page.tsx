@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Bell,
@@ -459,11 +460,12 @@ export default function Home() {
           >
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
               {/* Real Photo of Vishal More */}
-              <img
+              <Image
                 src="https://github.com/vishalmore90.png"
                 alt="Vishal More"
                 width={56}
                 height={56}
+                unoptimized
                 style={{
                   borderRadius: "var(--radius-md)",
                   objectFit: "cover",

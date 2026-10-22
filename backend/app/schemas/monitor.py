@@ -3,7 +3,9 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+from app.utils.security import validate_http_url, validate_tcp_target
 
 VALID_MONITOR_TYPES = ("http", "tcp")
 MIN_INTERVAL = 60
@@ -26,13 +28,15 @@ class MonitorCreate(BaseModel):
             raise ValueError(f"monitor_type must be one of: {VALID_MONITOR_TYPES}")
         return v
 
-    @field_validator("url")
-    @classmethod
-    def validate_url(cls, v: str) -> str:
-        v = v.strip()
-        if not (v.startswith("http://") or v.startswith("https://")):
-            raise ValueError("URL must start with http:// or https://")
-        return v
+    @model_validator(mode="after")
+    def validate_target_url(self) -> "MonitorCreate":
+        url_val = self.url.strip()
+        if self.monitor_type == "http":
+            validate_http_url(url_val, resolve_dns=False)
+        elif self.monitor_type == "tcp":
+            validate_tcp_target(url_val, resolve_dns=False)
+        self.url = url_val
+        return self
 
 
 class MonitorUpdate(BaseModel):
@@ -52,14 +56,17 @@ class MonitorUpdate(BaseModel):
             raise ValueError(f"monitor_type must be one of: {VALID_MONITOR_TYPES}")
         return v
 
-    @field_validator("url")
-    @classmethod
-    def validate_url(cls, v: str | None) -> str | None:
-        if v is not None:
-            v = v.strip()
-            if not (v.startswith("http://") or v.startswith("https://")):
-                raise ValueError("URL must start with http:// or https://")
-        return v
+    @model_validator(mode="after")
+    def validate_target_url(self) -> "MonitorUpdate":
+        if self.url is not None:
+            url_val = self.url.strip()
+            mtype = self.monitor_type or "http"
+            if mtype == "http":
+                validate_http_url(url_val, resolve_dns=False)
+            elif mtype == "tcp":
+                validate_tcp_target(url_val, resolve_dns=False)
+            self.url = url_val
+        return self
 
 
 class MonitorResponse(BaseModel):

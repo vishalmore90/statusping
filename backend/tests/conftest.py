@@ -21,8 +21,12 @@ from sqlalchemy import pool
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from app.config import settings
 from app.database import Base, get_db
 from app.main import app
+
+os.environ["APP_ENV"] = "test"
+settings.app_env = "test"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

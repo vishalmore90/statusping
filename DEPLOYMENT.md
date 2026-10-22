@@ -39,7 +39,8 @@ StatusPing is deployed across three modern cloud platforms designed for scalabil
 |---|---|---|---|
 | **Frontend Application** | Vercel | Global Edge Network | [https://statusping-rho.vercel.app](https://statusping-rho.vercel.app) |
 | **Backend API Service** | Render | Oregon, USA | [https://statusping-7ozn.onrender.com](https://statusping-7ozn.onrender.com) |
-| **Backend Health Check** | Render | Oregon, USA | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) |
+| **Backend Liveness Probe** | Render | Oregon, USA | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) / `/health/live` |
+| **Backend Readiness Probe** | Render | Oregon, USA | [https://statusping-7ozn.onrender.com/health/ready](https://statusping-7ozn.onrender.com/health/ready) |
 | **Interactive API Docs** | Render | Oregon, USA | [https://statusping-7ozn.onrender.com/docs](https://statusping-7ozn.onrender.com/docs) |
 | **Production PostgreSQL** | Supabase | Seoul (`ap-northeast-2`) | `aws-0-ap-northeast-2.pooler.supabase.com:5432` |
 

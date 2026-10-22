@@ -267,7 +267,8 @@ Interactive OpenAPI documentation is available at `/docs` on the backend host:
 
 | Method | Endpoint | Description | Auth Required | Rate Limit |
 |---|---|---|---|---|
-| `GET` | `/health` | Service and database health check | No | None |
+| `GET` | `/health` / `/health/live` | Process liveness probe (immediate 200) | No | None |
+| `GET` | `/health/ready` | Database readiness probe (2.0s timeout) | No | None |
 | `POST` | `/api/v1/auth/register` | Create account and issue JWT token | No | 10 req/min |
 | `POST` | `/api/v1/auth/login` | Authenticate credentials and issue JWT | No | 15 req/min |
 | `GET` | `/api/v1/auth/me` | Fetch profile for current authenticated user | Yes | None |
@@ -290,6 +291,10 @@ Interactive OpenAPI documentation is available at `/docs` on the backend host:
 
 ## Security and Hardening
 
+- **SSRF (Server-Side Request Forgery) Mitigation**:
+  - Schema-level target validation (`validate_http_url` and `validate_tcp_target`) rejecting non-HTTP/TCP schemes.
+  - Pre-flight DNS resolution and IP classification (`is_prohibited_ip`) blocking loopback (`127.0.0.0/8`, `::1`), RFC 1918 private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), cloud metadata services (`169.254.169.254`), link-local (`fe80::/10`), unique local (`fc00::/7`), and prohibited hostnames (`localhost`, `metadata.google.internal`).
+  - Safe iterative redirect inspection (max 5 hops) checking every intermediate `Location` header before connecting.
 - **HTTP Security Headers**: Enforced via FastAPI middleware:
   - `X-Content-Type-Options: nosniff`
   - `X-Frame-Options: DENY`
@@ -297,8 +302,8 @@ Interactive OpenAPI documentation is available at `/docs` on the backend host:
   - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
   - `Referrer-Policy: strict-origin-when-cross-origin`
 - **Rate Limiting**: In-memory IP-based sliding window middleware on `/api/v1/auth/login` (15 requests/minute) and `/api/v1/auth/register` (10 requests/minute) returning HTTP 429 with `Retry-After: 60`.
-- **Tenant Isolation**: All database queries enforce user ownership checks on monitors, incidents, and status pages.
-- **Credential Storage**: Passwords hashed with bcrypt; JWT signatures validated using HMAC-SHA256.
+- **Tenant Isolation**: Strict database ownership filters across monitors, incidents, check history, and status pages preventing cross-tenant data leakage or tampering.
+- **Credential Storage**: Passwords hashed with bcrypt; JWT signatures validated using HMAC-SHA256 with robust `sub` claim type verification.
 
 ---
 

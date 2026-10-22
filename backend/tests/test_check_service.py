@@ -194,7 +194,7 @@ async def test_tcp_check_up() -> None:
     mock_writer.wait_closed = AsyncMock()
 
     with patch("asyncio.open_connection", new=AsyncMock(return_value=(AsyncMock(), mock_writer))):
-        status, rt_ms, code, err = await _perform_tcp_check("localhost:5432", timeout_seconds=5)
+        status, rt_ms, code, err = await _perform_tcp_check("8.8.8.8:5432", timeout_seconds=5)
 
     assert status == "up"
     assert code is None
@@ -208,7 +208,7 @@ async def test_tcp_check_connection_error() -> None:
     from app.services.check_service import _perform_tcp_check
 
     with patch("asyncio.open_connection", side_effect=ConnectionRefusedError("Connection refused")):
-        status, rt_ms, code, err = await _perform_tcp_check("localhost:9999", timeout_seconds=5)
+        status, rt_ms, code, err = await _perform_tcp_check("8.8.8.8:9999", timeout_seconds=5)
 
     assert status == "down"
     assert err is not None and "TCP connection error" in err

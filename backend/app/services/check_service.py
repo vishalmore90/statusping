@@ -7,6 +7,7 @@ Status transitions trigger notification hooks (stubbed → Phase 5).
 
 import asyncio
 import time
+import urllib.parse
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -14,9 +15,11 @@ import httpx
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.database import AsyncSessionLocal
 from app.models.check_result import CheckResult
 from app.models.monitor import Monitor
+from app.utils.security import validate_http_url, validate_tcp_target
 
 # ── Core check execution ──────────────────────────────────────────────────────
 
@@ -25,17 +28,66 @@ async def _perform_http_check(
     url: str,
     timeout_seconds: int,
     expected_status_code: int | None,
+    enforce_dns: bool | None = None,
 ) -> tuple[str, int | None, int | None, str | None]:
     """
-    Perform an HTTP GET check.
+    Perform an HTTP GET check with SSRF protection and safe redirect chain validation.
 
     Returns:
         (status, response_time_ms, actual_status_code, error_message)
     """
     start = time.monotonic()
+    should_resolve = enforce_dns if enforce_dns is not None else (settings.app_env != "test")
+
     try:
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            response = await client.get(url, timeout=float(timeout_seconds))
+        validate_http_url(url, resolve_dns=should_resolve)
+    except ValueError as exc:
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "down", elapsed_ms, None, f"Destination security check failed: {exc}"
+
+    current_url = url
+    max_redirects = 5
+    redirect_count = 0
+
+    try:
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            while True:
+                response = await client.get(current_url, timeout=float(timeout_seconds))
+
+                is_redirect = (
+                    response.status_code in (301, 302, 303, 307, 308)
+                    and "Location" in response.headers
+                )
+                if is_redirect:
+                    redirect_count += 1
+                    if redirect_count > max_redirects:
+                        elapsed_ms = int((time.monotonic() - start) * 1000)
+                        return (
+                            "down",
+                            elapsed_ms,
+                            response.status_code,
+                            "Too many redirects (exceeded limit of 5)",
+                        )
+
+                    location = response.headers["Location"]
+                    next_url = urllib.parse.urljoin(current_url, location)
+
+                    # Validate each redirect destination against SSRF policy before following
+                    try:
+                        validate_http_url(next_url, resolve_dns=should_resolve)
+                    except ValueError as exc:
+                        elapsed_ms = int((time.monotonic() - start) * 1000)
+                        return (
+                            "down",
+                            elapsed_ms,
+                            response.status_code,
+                            f"Redirect to prohibited destination blocked: {exc}",
+                        )
+
+                    current_url = next_url
+                else:
+                    break
+
         elapsed_ms = int((time.monotonic() - start) * 1000)
         code = response.status_code
         expected = expected_status_code or 200
@@ -47,27 +99,32 @@ async def _perform_http_check(
     except httpx.RequestError as exc:
         elapsed_ms = int((time.monotonic() - start) * 1000)
         return "down", elapsed_ms, None, f"Request error: {type(exc).__name__}"
+    except Exception as exc:  # noqa: BLE001
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "down", elapsed_ms, None, f"Check error: {exc}"
 
 
 async def _perform_tcp_check(
     target: str,
     timeout_seconds: int,
+    enforce_dns: bool | None = None,
 ) -> tuple[str, int | None, int | None, str | None]:
     """
-    Perform a TCP socket connection check to host:port.
+    Perform a TCP socket connection check to host:port with SSRF protection.
 
     Returns:
         (status, response_time_ms, actual_status_code, error_message)
     """
     start = time.monotonic()
-    try:
-        clean_target = target.replace("tcp://", "").strip()
-        if ":" in clean_target:
-            host, port_str = clean_target.rsplit(":", 1)
-            port = int(port_str)
-        else:
-            host, port = clean_target, 80
+    should_resolve = enforce_dns if enforce_dns is not None else (settings.app_env != "test")
 
+    try:
+        host, port = validate_tcp_target(target, resolve_dns=should_resolve)
+    except ValueError as exc:
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+        return "down", elapsed_ms, None, f"Destination security check failed: {exc}"
+
+    try:
         _, writer = await asyncio.wait_for(
             asyncio.open_connection(host, port),
             timeout=float(timeout_seconds),

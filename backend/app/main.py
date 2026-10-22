@@ -1,3 +1,4 @@
+import asyncio
 import time
 from collections import defaultdict
 from collections.abc import AsyncGenerator, Callable
@@ -6,9 +7,11 @@ from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from starlette.responses import JSONResponse
 
 from app.config import settings
+from app.database import AsyncSessionLocal
 from app.routers import auth, check_results, incidents, monitors, public, status_pages
 from app.scheduler.jobs import start_scheduler, stop_scheduler
 
@@ -93,8 +96,31 @@ def create_app() -> FastAPI:
     app.include_router(public.router, prefix="/api/v1")
 
     @app.get("/health", tags=["system"])
+    @app.get("/health/live", tags=["system"])
     async def health_check() -> dict[str, str]:
+        """Liveness probe: returns 200 OK if the application process is running."""
         return {"status": "ok"}
+
+    @app.get("/health/ready", tags=["system"])
+    async def readiness_check() -> Response:
+        """
+        Readiness probe: validates database connectivity.
+        Returns HTTP 200 if database is reachable, HTTP 503 if unreachable or timed out.
+        Never leaks credentials or sensitive internal infrastructure details.
+        """
+        try:
+            async with asyncio.timeout(2.0):
+                async with AsyncSessionLocal() as session:
+                    await session.execute(text("SELECT 1"))
+            return JSONResponse(
+                status_code=200,
+                content={"status": "ready", "database": "connected"},
+            )
+        except Exception:
+            return JSONResponse(
+                status_code=503,
+                content={"status": "unready", "database": "disconnected"},
+            )
 
     return app
 
