@@ -47,7 +47,8 @@ StatusPing is continuously deployed across production cloud infrastructure:
 |---|---|---|---|
 | Frontend Web App | Vercel | [https://statusping-rho.vercel.app](https://statusping-rho.vercel.app) | Operational |
 | Backend REST API | Render | [https://statusping-7ozn.onrender.com](https://statusping-7ozn.onrender.com) | Operational |
-| Health Check | Render | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) | Operational |
+| Health Check (Liveness) | Render | [https://statusping-7ozn.onrender.com/health](https://statusping-7ozn.onrender.com/health) | Operational |
+| Health Check (Readiness) | Render | [https://statusping-7ozn.onrender.com/health/ready](https://statusping-7ozn.onrender.com/health/ready) | Operational |
 | Interactive API Docs | Render | [https://statusping-7ozn.onrender.com/docs](https://statusping-7ozn.onrender.com/docs) | Operational |
 | Primary Database | Supabase | PostgreSQL 17 (Session Pooler Port 5432) | Operational |
 
@@ -151,7 +152,8 @@ Verify service endpoints:
 - **Frontend Application**: [http://localhost:3000](http://localhost:3000)
 - **Demo Status Page**: [http://localhost:3000/status/demo](http://localhost:3000/status/demo)
 - **FastAPI Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+- **Liveness Probe**: [http://localhost:8000/health](http://localhost:8000/health)
+- **Readiness Probe**: [http://localhost:8000/health/ready](http://localhost:8000/health/ready)
 
 View container logs:
 ```bash
@@ -311,7 +313,7 @@ Interactive OpenAPI documentation is available at `/docs` on the backend host:
 
 ### Backend Test Suite
 
-Run unit and integration tests with coverage reporting:
+StatusPing includes a comprehensive automated test suite (135 tests covering SSRF protection, JWT verification, multi-tenant isolation, check execution, health probes, and incident workflows):
 
 ```bash
 cd backend
@@ -328,6 +330,13 @@ mypy app
 ```
 
 ### Frontend Validation
+
+Execute Jest unit and component test suites (covering auth tokens, Badge, StatusIndicator, and UptimeBar components):
+
+```bash
+cd frontend
+npm test
+```
 
 Validate TypeScript types, ESLint rules, and Turbopack production builds:
 
